@@ -1,0 +1,67 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Borewell Bill Calculator",
+  "appTagline": "Fast, accurate slab-wise billing",
+  "languageTooltip": "Change language",
+
+  "totalDepthLabel": "TOTAL DEPTH",
+  "feetUnit": "ft",
+
+  "depthErrorEmpty": "Please enter borewell depth.",
+  "depthErrorInvalid": "Please enter a valid borewell depth.",
+  "depthErrorCustomRate": "Please enter custom rate.",
+
+  "billForClientTitle": "Generate bill for a client",
+  "billForClientSubtitle": "Adds their name/contact to the shared or downloaded PDF",
+  "clientNameLabel": "Client Name",
+  "clientNameError": "Please enter the client's name.",
+  "clientPhoneLabel": "Phone (optional)",
+  "clientAddressLabel": "Address (optional)",
+
+  "rateSlabsHeading": "Rate Slabs",
+  "rateLabel": "Rate",
+  "customOption": "Custom",
+  "customRateLabel": "Custom Rate",
+
+  "calculateBill": "Calculate Bill",
+  "reset": "Reset",
+  "copy": "Copy",
+  "share": "Share",
+  "downloadPdf": "Download PDF",
+  "open": "Open",
+
+  "billCopied": "Bill copied to clipboard",
+  "pdfSaved": "PDF saved",
+  "shareFailed": "Could not share the PDF. Please try again.",
+  "downloadFailed": "Could not save the PDF. Please try again.",
+
+  "billBreakdown": "Bill Breakdown",
+  "totalAmount": "Total Amount",
+
+  "editDefaultRates": "Edit Default Rates",
+  "defaultRatesHint": "These rates are used every time the app opens.",
+  "invalidRateForEverySlab": "Please enter a valid rate for every slab.",
+  "defaultRatesSaved": "Default rates saved",
+  "save": "Save",
+
+  "pdfTitle": "Borewell Bill",
+  "pdfGeneratedOn": "Generated on {date}",
+  "@pdfGeneratedOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "pdfBillTo": "Bill To",
+  "pdfTotalDepth": "Total Depth: {depth} ft",
+  "@pdfTotalDepth": {
+    "placeholders": {
+      "depth": { "type": "int" }
+    }
+  },
+  "pdfDepthRange": "Depth Range",
+  "pdfFeet": "Feet",
+  "pdfRatePerFt": "Rate/ft",
+  "pdfAmount": "Amount",
+  "pdfTotalAmount": "Total Amount"
+}

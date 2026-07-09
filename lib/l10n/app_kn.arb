@@ -1,0 +1,57 @@
+{
+  "@@locale": "kn",
+
+  "appTitle": "ಬೋರ್‌ವೆಲ್ ಬಿಲ್ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+  "appTagline": "ವೇಗದ, ನಿಖರ ಹಂತ-ಆಧಾರಿತ ಬಿಲ್ಲಿಂಗ್",
+  "languageTooltip": "ಭಾಷೆ ಬದಲಾಯಿಸಿ",
+
+  "totalDepthLabel": "ಒಟ್ಟು ಆಳ",
+  "feetUnit": "ಅಡಿ",
+
+  "depthErrorEmpty": "ದಯವಿಟ್ಟು ಬೋರ್‌ವೆಲ್ ಆಳವನ್ನು ನಮೂದಿಸಿ.",
+  "depthErrorInvalid": "ದಯವಿಟ್ಟು ಸರಿಯಾದ ಬೋರ್‌ವೆಲ್ ಆಳವನ್ನು ನಮೂದಿಸಿ.",
+  "depthErrorCustomRate": "ದಯವಿಟ್ಟು ನಿಗದಿತ ದರವನ್ನು ನಮೂದಿಸಿ.",
+
+  "billForClientTitle": "ಗ್ರಾಹಕರಿಗಾಗಿ ಬಿಲ್ ರಚಿಸಿ",
+  "billForClientSubtitle": "ಹಂಚಿಕೊಂಡ ಅಥವಾ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ PDF ಗೆ ಅವರ ಹೆಸರು/ಸಂಪರ್ಕವನ್ನು ಸೇರಿಸುತ್ತದೆ",
+  "clientNameLabel": "ಗ್ರಾಹಕರ ಹೆಸರು",
+  "clientNameError": "ದಯವಿಟ್ಟು ಗ್ರಾಹಕರ ಹೆಸರನ್ನು ನಮೂದಿಸಿ.",
+  "clientPhoneLabel": "ಫೋನ್ (ಐಚ್ಛಿಕ)",
+  "clientAddressLabel": "ವಿಳಾಸ (ಐಚ್ಛಿಕ)",
+
+  "rateSlabsHeading": "ದರ ಹಂತಗಳು",
+  "rateLabel": "ದರ",
+  "customOption": "ಕಸ್ಟಮ್",
+  "customRateLabel": "ಕಸ್ಟಮ್ ದರ",
+
+  "calculateBill": "ಬಿಲ್ ಲೆಕ್ಕಹಾಕಿ",
+  "reset": "ಮರುಹೊಂದಿಸಿ",
+  "copy": "ನಕಲಿಸಿ",
+  "share": "ಹಂಚಿಕೊಳ್ಳಿ",
+  "downloadPdf": "PDF ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
+  "open": "ತೆರೆಯಿರಿ",
+
+  "billCopied": "ಬಿಲ್ ಅನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ",
+  "pdfSaved": "PDF ಉಳಿಸಲಾಗಿದೆ",
+  "shareFailed": "PDF ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  "downloadFailed": "PDF ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+
+  "billBreakdown": "ಬಿಲ್ ವಿವರ",
+  "totalAmount": "ಒಟ್ಟು ಮೊತ್ತ",
+
+  "editDefaultRates": "ಡೀಫಾಲ್ಟ್ ದರಗಳನ್ನು ಸಂಪಾದಿಸಿ",
+  "defaultRatesHint": "ಈ ದರಗಳನ್ನು ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯುವ ಪ್ರತಿ ಬಾರಿ ಬಳಸಲಾಗುತ್ತದೆ.",
+  "invalidRateForEverySlab": "ದಯವಿಟ್ಟು ಪ್ರತಿ ಹಂತಕ್ಕೂ ಸರಿಯಾದ ದರವನ್ನು ನಮೂದಿಸಿ.",
+  "defaultRatesSaved": "ಡೀಫಾಲ್ಟ್ ದರಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ",
+  "save": "ಉಳಿಸಿ",
+
+  "pdfTitle": "ಬೋರ್‌ವೆಲ್ ಬಿಲ್",
+  "pdfGeneratedOn": "{date} ರಂದು ರಚಿಸಲಾಗಿದೆ",
+  "pdfBillTo": "ಬಿಲ್ ಸ್ವೀಕರಿಸುವವರು",
+  "pdfTotalDepth": "ಒಟ್ಟು ಆಳ: {depth} ಅಡಿ",
+  "pdfDepthRange": "ಆಳದ ವ್ಯಾಪ್ತಿ",
+  "pdfFeet": "ಅಡಿ",
+  "pdfRatePerFt": "ದರ/ಅಡಿ",
+  "pdfAmount": "ಮೊತ್ತ",
+  "pdfTotalAmount": "ಒಟ್ಟು ಮೊತ್ತ"
+}
