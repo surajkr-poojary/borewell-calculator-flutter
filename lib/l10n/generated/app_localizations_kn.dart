@@ -38,7 +38,11 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get depthErrorMissingCasingRate =>
-      'ದಯವಿಟ್ಟು ಕೇಸಿಂಗ್ ದರವನ್ನು ಆಯ್ಕೆಮಾಡಿ.';
+      'ದಯವಿಟ್ಟು ಸರಿಯಾದ ಕೇಸಿಂಗ್ ದರವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ನಮೂದಿಸಿ.';
+
+  @override
+  String get depthErrorInvalidBaseRate =>
+      'ದಯವಿಟ್ಟು ಸರಿಯಾದ ಮೂಲ ದರವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ನಮೂದಿಸಿ.';
 
   @override
   String get billForClientTitle => 'ಗ್ರಾಹಕರಿಗಾಗಿ ಬಿಲ್ ರಚಿಸಿ';
@@ -79,6 +83,36 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get selectCasingRateHint => 'ಕೇಸಿಂಗ್ ದರ ಆಯ್ಕೆಮಾಡಿ';
+
+  @override
+  String get customOption => 'ಕಸ್ಟಮ್';
+
+  @override
+  String get customRateLabel => 'ಕಸ್ಟಮ್ ದರ (₹/ಅಡಿ)';
+
+  @override
+  String get additionalChargesHeading => 'ಹೆಚ್ಚುವರಿ ಶುಲ್ಕಗಳು';
+
+  @override
+  String get collarQtyLabel => 'ಕಾಲರ್';
+
+  @override
+  String get weldingQtyLabel => 'ವೆಲ್ಡಿಂಗ್';
+
+  @override
+  String get cuttingQtyLabel => 'ಕಟಿಂಗ್';
+
+  @override
+  String get capQtyLabel => 'ಕ್ಯಾಪ್';
+
+  @override
+  String get perUnitSuffix => '/ಒಂದಕ್ಕೆ';
+
+  @override
+  String get piecesUnit => 'ಸಂಖ್ಯೆ';
+
+  @override
+  String get customQtyLabel => 'ಕಸ್ಟಮ್ ಸಂಖ್ಯೆ';
 
   @override
   String get calculateBill => 'ಬಿಲ್ ಲೆಕ್ಕಹಾಕಿ';
@@ -122,29 +156,50 @@ class AppLocalizationsKn extends AppLocalizations {
   String get fixedChargeDetail => 'ಸ್ಥಿರ ಶುಲ್ಕ';
 
   @override
-  String get editFixedCharges => 'ಸ್ಥಿರ ಶುಲ್ಕಗಳನ್ನು ಸಂಪಾದಿಸಿ';
+  String get editFixedCharges => 'ದರಗಳನ್ನು ಸಂಪಾದಿಸಿ';
 
   @override
-  String get fixedChargesHint => 'ಈ ಶುಲ್ಕಗಳನ್ನು ಪ್ರತಿ ಬಿಲ್‌ಗೆ ಸೇರಿಸಲಾಗುತ್ತದೆ.';
+  String get defaultRatesHeading => 'ಡೀಫಾಲ್ಟ್ ದರಗಳು';
 
   @override
-  String get collarLabel => 'ಕಾಲರ್';
+  String get defaultRatesHint =>
+      'ಪ್ರತಿ ಹೊಸ ಬಿಲ್‌ಗೆ ಇವು ಮುಖಪುಟದಲ್ಲಿ ಮೊದಲೇ ಆಯ್ಕೆಯಾಗಿರುತ್ತವೆ.';
 
   @override
-  String get weldingLabel => 'ವೆಲ್ಡಿಂಗ್';
+  String get defaultBaseRateLabel => 'ಡೀಫಾಲ್ಟ್ ಮೂಲ ದರ';
 
   @override
-  String get cuttingLabel => 'ಕಟಿಂಗ್';
+  String get defaultCasingRateLabel => 'ಡೀಫಾಲ್ಟ್ ಕೇಸಿಂಗ್ ದರ';
 
   @override
-  String get capLabel => 'ಕ್ಯಾಪ್';
+  String get invalidDefaultRates =>
+      'ದಯವಿಟ್ಟು ಎರಡೂ ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ಸರಿಯಾದ ದರವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ನಮೂದಿಸಿ.';
+
+  @override
+  String get itemRatesHeading => 'ಐಟಂ ದರಗಳು';
+
+  @override
+  String get fixedChargesHint =>
+      'ಪ್ರತಿ ಐಟಂಗೆ ಒಂದಕ್ಕೆ ದರವನ್ನು ಹೊಂದಿಸಿ. ಬಿಲ್‌ನಲ್ಲಿ, ಈ ದರವನ್ನು ನೀವು ನಮೂದಿಸುವ ಸಂಖ್ಯೆಯಿಂದ ಗುಣಿಸಲಾಗುತ್ತದೆ.';
+
+  @override
+  String get collarLabel => 'ಕಾಲರ್ (ಒಂದಕ್ಕೆ)';
+
+  @override
+  String get weldingLabel => 'ವೆಲ್ಡಿಂಗ್ (ಒಂದಕ್ಕೆ)';
+
+  @override
+  String get cuttingLabel => 'ಕಟಿಂಗ್ (ಒಂದಕ್ಕೆ)';
+
+  @override
+  String get capLabel => 'ಕ್ಯಾಪ್ (ಒಂದಕ್ಕೆ)';
 
   @override
   String get invalidFixedCharges =>
       'ದಯವಿಟ್ಟು ಪ್ರತಿ ಶುಲ್ಕಕ್ಕೂ ಸರಿಯಾದ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ.';
 
   @override
-  String get fixedChargesSaved => 'ಸ್ಥಿರ ಶುಲ್ಕಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ';
+  String get fixedChargesSaved => 'ದರಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ';
 
   @override
   String get save => 'ಉಳಿಸಿ';

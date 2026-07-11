@@ -5,25 +5,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/bill_result.dart';
+import '../models/default_rates.dart';
 import '../models/drilling_rate_band.dart';
 import '../models/fixed_charges.dart';
 import '../utils/currency_formatter.dart';
 
 /// Reasons [BillProvider.calculate] can fail. The UI maps each to a
 /// localized message, since this provider has no [BuildContext] of its own.
-enum DepthError { empty, invalid, casingEmpty, invalidCasing, missingCasingRate }
-
-const double defaultBaseRate = 100;
+enum DepthError {
+  empty,
+  invalid,
+  invalidBaseRate,
+  casingEmpty,
+  invalidCasing,
+  missingCasingRate,
+}
 
 /// Central state holder for the calculator: the selected base drilling
-/// rate, optional casing feet/rate, the persisted fixed charges
+/// rate, casing feet/rate, the persisted default rates and fixed charges
 /// (COLLAR/WELDING/CUTTING/CAP), and the last calculated bill.
 class BillProvider extends ChangeNotifier {
-  static const _prefsKey = 'fixed_charges_v1';
+  static const _fixedChargesPrefsKey = 'fixed_charges_v1';
+  static const _defaultRatesPrefsKey = 'default_rates_v1';
 
-  double baseRate = defaultBaseRate;
+  double baseRate = DefaultRates.initial().baseRate;
   double? casingRate;
 
+  DefaultRates _savedDefaultRates = DefaultRates.initial();
   FixedCharges fixedCharges = FixedCharges.defaults();
   FixedCharges _savedFixedCharges = FixedCharges.defaults();
   bool _isLoaded = false;
@@ -35,23 +43,54 @@ class BillProvider extends ChangeNotifier {
   DepthError? depthError;
   BillResult? result;
 
+  DefaultRates get savedDefaultRates => _savedDefaultRates;
   FixedCharges get savedFixedCharges => _savedFixedCharges;
   bool get isLoaded => _isLoaded;
 
-  /// Loads previously saved fixed charges (if any) from SharedPreferences.
+  /// Loads previously saved default rates and fixed charges (if any) from
+  /// SharedPreferences.
   Future<void> loadDefaults() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonStr = prefs.getString(_prefsKey);
-    if (jsonStr != null) {
+
+    final ratesJson = prefs.getString(_defaultRatesPrefsKey);
+    if (ratesJson != null) {
       try {
-        final decoded = jsonDecode(jsonStr) as Map<String, dynamic>;
+        final decoded = jsonDecode(ratesJson) as Map<String, dynamic>;
+        _savedDefaultRates = DefaultRates.fromJson(decoded);
+      } catch (_) {
+        // Corrupt or unexpected data: keep the factory defaults.
+      }
+    }
+    baseRate = _savedDefaultRates.baseRate;
+    casingRate = _savedDefaultRates.casingRate;
+
+    final chargesJson = prefs.getString(_fixedChargesPrefsKey);
+    if (chargesJson != null) {
+      try {
+        final decoded = jsonDecode(chargesJson) as Map<String, dynamic>;
         _savedFixedCharges = FixedCharges.fromJson(decoded);
       } catch (_) {
         // Corrupt or unexpected data: keep the factory defaults.
       }
     }
     fixedCharges = _savedFixedCharges;
+
     _isLoaded = true;
+    version++;
+    notifyListeners();
+  }
+
+  /// Persists [newRates] as the default base/casing rates for future bills
+  /// and applies them to the current session immediately.
+  Future<void> saveDefaultRates(DefaultRates newRates) async {
+    _savedDefaultRates = newRates;
+    baseRate = newRates.baseRate;
+    casingRate = newRates.casingRate;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _defaultRatesPrefsKey,
+      jsonEncode(_savedDefaultRates.toJson()),
+    );
     version++;
     notifyListeners();
   }
@@ -62,7 +101,10 @@ class BillProvider extends ChangeNotifier {
     _savedFixedCharges = newCharges;
     fixedCharges = newCharges;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefsKey, jsonEncode(_savedFixedCharges.toJson()));
+    await prefs.setString(
+      _fixedChargesPrefsKey,
+      jsonEncode(_savedFixedCharges.toJson()),
+    );
     version++;
     notifyListeners();
   }
@@ -78,8 +120,19 @@ class BillProvider extends ChangeNotifier {
   }
 
   /// Validates the given depth/casing text and current rates, then computes
-  /// the bill breakdown. Errors are exposed via [depthError].
-  void calculate(String depthInput, String casingFeetInput) {
+  /// the bill breakdown. [collarQtyInput]/[weldingQtyInput]/
+  /// [cuttingQtyInput]/[capQtyInput] are optional piece counts — each is
+  /// billed at its Settings-configured per-unit rate and omitted from the
+  /// bill entirely when left blank or zero. Errors are exposed via
+  /// [depthError].
+  void calculate(
+    String depthInput,
+    String casingFeetInput, {
+    String collarQtyInput = '',
+    String weldingQtyInput = '',
+    String cuttingQtyInput = '',
+    String capQtyInput = '',
+  }) {
     depthError = null;
     result = null;
 
@@ -111,8 +164,14 @@ class BillProvider extends ChangeNotifier {
       return;
     }
 
-    if (casingRate == null) {
+    if (casingRate == null || casingRate! <= 0) {
       depthError = DepthError.missingCasingRate;
+      notifyListeners();
+      return;
+    }
+
+    if (baseRate <= 0) {
+      depthError = DepthError.invalidBaseRate;
       notifyListeners();
       return;
     }
@@ -131,31 +190,50 @@ class BillProvider extends ChangeNotifier {
       final rangeLabel = band.maxDepth == null
           ? '$rangeStart ft and above'
           : '$rangeStart - $upper ft';
-      drillingItems.add(BillBreakdownItem(
-        label: rangeLabel,
-        quantity: units,
-        rate: rate,
-        amount: amount,
-      ));
+      drillingItems.add(
+        BillBreakdownItem(
+          label: rangeLabel,
+          quantity: units,
+          unit: 'ft',
+          rate: rate,
+          amount: amount,
+        ),
+      );
     }
 
     final otherItems = <BillBreakdownItem>[
       BillBreakdownItem(
         label: 'Casing (GI)',
         quantity: casingFeet,
+        unit: 'ft',
         rate: casingRate!,
         amount: casingFeet * casingRate!,
       ),
     ];
-    otherItems.addAll([
-      BillBreakdownItem(label: 'COLLAR', amount: fixedCharges.collar),
-      BillBreakdownItem(label: 'WELDING', amount: fixedCharges.welding),
-      BillBreakdownItem(label: 'CUTTING', amount: fixedCharges.cutting),
-      BillBreakdownItem(label: 'CAP', amount: fixedCharges.cap),
-    ]);
 
-    final total = [...drillingItems, ...otherItems]
-        .fold<double>(0, (sum, item) => sum + item.amount);
+    void addPieceItem(String label, String qtyInput, double rate) {
+      final qty = int.tryParse(qtyInput.trim()) ?? 0;
+      if (qty <= 0) return;
+      otherItems.add(
+        BillBreakdownItem(
+          label: label,
+          quantity: qty,
+          unit: 'Nos',
+          rate: rate,
+          amount: qty * rate,
+        ),
+      );
+    }
+
+    addPieceItem('COLLAR', collarQtyInput, fixedCharges.collar);
+    addPieceItem('WELDING', weldingQtyInput, fixedCharges.welding);
+    addPieceItem('CUTTING', cuttingQtyInput, fixedCharges.cutting);
+    addPieceItem('CAP', capQtyInput, fixedCharges.cap);
+
+    final total = [
+      ...drillingItems,
+      ...otherItems,
+    ].fold<double>(0, (sum, item) => sum + item.amount);
 
     result = BillResult(
       totalDepth: depth,
@@ -174,8 +252,8 @@ class BillProvider extends ChangeNotifier {
   void reset() {
     depthError = null;
     result = null;
-    baseRate = defaultBaseRate;
-    casingRate = null;
+    baseRate = _savedDefaultRates.baseRate;
+    casingRate = _savedDefaultRates.casingRate;
     fixedCharges = _savedFixedCharges;
     version++;
     notifyListeners();
@@ -192,8 +270,9 @@ class BillProvider extends ChangeNotifier {
       ..writeln();
 
     for (final item in [...r.drillingItems, ...r.otherItems]) {
+      final unitSuffix = item.unit != null ? ' ${item.unit}' : '';
       final detail = item.quantity != null && item.rate != null
-          ? '${item.quantity} ft × ${CurrencyFormatter.format(item.rate!)}'
+          ? '${item.quantity}$unitSuffix × ${CurrencyFormatter.format(item.rate!)}'
           : CurrencyFormatter.format(item.amount);
       buffer
         ..writeln(item.label)
@@ -202,7 +281,9 @@ class BillProvider extends ChangeNotifier {
     }
 
     buffer.writeln();
-    buffer.write('${l10n.totalAmount}: ${CurrencyFormatter.format(r.totalAmount)}');
+    buffer.write(
+      '${l10n.totalAmount}: ${CurrencyFormatter.format(r.totalAmount)}',
+    );
     return buffer.toString();
   }
 }

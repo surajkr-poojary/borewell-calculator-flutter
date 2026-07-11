@@ -58,7 +58,7 @@ class ResultCard extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           item.quantity != null && item.rate != null
-                              ? '${item.quantity} ft × ${CurrencyFormatter.format(item.rate!)}'
+                              ? '${item.quantity}${item.unit != null ? ' ${item.unit}' : ''} × ${CurrencyFormatter.format(item.rate!)}'
                               : l10n.fixedChargeDetail,
                           style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant),

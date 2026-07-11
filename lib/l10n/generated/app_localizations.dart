@@ -155,8 +155,14 @@ abstract class AppLocalizations {
   /// No description provided for @depthErrorMissingCasingRate.
   ///
   /// In en, this message translates to:
-  /// **'Please select a casing rate.'**
+  /// **'Please select or enter a valid casing rate.'**
   String get depthErrorMissingCasingRate;
+
+  /// No description provided for @depthErrorInvalidBaseRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select or enter a valid base rate.'**
+  String get depthErrorInvalidBaseRate;
 
   /// No description provided for @billForClientTitle.
   ///
@@ -235,6 +241,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select casing rate'**
   String get selectCasingRateHint;
+
+  /// No description provided for @customOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get customOption;
+
+  /// No description provided for @customRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Rate (₹/ft)'**
+  String get customRateLabel;
+
+  /// No description provided for @additionalChargesHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Charges'**
+  String get additionalChargesHeading;
+
+  /// No description provided for @collarQtyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Collar'**
+  String get collarQtyLabel;
+
+  /// No description provided for @weldingQtyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Welding'**
+  String get weldingQtyLabel;
+
+  /// No description provided for @cuttingQtyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cutting'**
+  String get cuttingQtyLabel;
+
+  /// No description provided for @capQtyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cap'**
+  String get capQtyLabel;
+
+  /// No description provided for @perUnitSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'/unit'**
+  String get perUnitSuffix;
+
+  /// No description provided for @piecesUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Nos'**
+  String get piecesUnit;
+
+  /// No description provided for @customQtyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Quantity'**
+  String get customQtyLabel;
 
   /// No description provided for @calculateBill.
   ///
@@ -317,37 +383,73 @@ abstract class AppLocalizations {
   /// No description provided for @editFixedCharges.
   ///
   /// In en, this message translates to:
-  /// **'Edit Fixed Charges'**
+  /// **'Edit Rates'**
   String get editFixedCharges;
+
+  /// No description provided for @defaultRatesHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Rates'**
+  String get defaultRatesHeading;
+
+  /// No description provided for @defaultRatesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'These are pre-selected on the home screen for every new bill.'**
+  String get defaultRatesHint;
+
+  /// No description provided for @defaultBaseRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Base Rate'**
+  String get defaultBaseRateLabel;
+
+  /// No description provided for @defaultCasingRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Casing Rate'**
+  String get defaultCasingRateLabel;
+
+  /// No description provided for @invalidDefaultRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select or enter a valid rate for both defaults.'**
+  String get invalidDefaultRates;
+
+  /// No description provided for @itemRatesHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Rates'**
+  String get itemRatesHeading;
 
   /// No description provided for @fixedChargesHint.
   ///
   /// In en, this message translates to:
-  /// **'These charges are added to every bill.'**
+  /// **'Set the per-unit rate for each item. On the bill, this rate is multiplied by the quantity you enter.'**
   String get fixedChargesHint;
 
   /// No description provided for @collarLabel.
   ///
   /// In en, this message translates to:
-  /// **'Collar'**
+  /// **'Collar (per unit)'**
   String get collarLabel;
 
   /// No description provided for @weldingLabel.
   ///
   /// In en, this message translates to:
-  /// **'Welding'**
+  /// **'Welding (per unit)'**
   String get weldingLabel;
 
   /// No description provided for @cuttingLabel.
   ///
   /// In en, this message translates to:
-  /// **'Cutting'**
+  /// **'Cutting (per unit)'**
   String get cuttingLabel;
 
   /// No description provided for @capLabel.
   ///
   /// In en, this message translates to:
-  /// **'Cap'**
+  /// **'Cap (per unit)'**
   String get capLabel;
 
   /// No description provided for @invalidFixedCharges.
@@ -359,7 +461,7 @@ abstract class AppLocalizations {
   /// No description provided for @fixedChargesSaved.
   ///
   /// In en, this message translates to:
-  /// **'Fixed charges saved'**
+  /// **'Rates saved'**
   String get fixedChargesSaved;
 
   /// No description provided for @save.

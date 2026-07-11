@@ -169,7 +169,7 @@ class PdfService {
                         _cell(item.label),
                         _cell(
                           item.quantity != null && item.rate != null
-                              ? '${item.quantity} ft x ${_money(item.rate!)}'
+                              ? '${item.quantity}${item.unit != null ? ' ${item.unit}' : ''} x ${_money(item.rate!)}'
                               : l10n.fixedChargeDetail,
                         ),
                         _cell(_money(item.amount)),

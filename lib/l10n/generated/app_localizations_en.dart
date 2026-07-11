@@ -36,7 +36,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get depthErrorInvalidCasing => 'Please enter a valid casing depth.';
 
   @override
-  String get depthErrorMissingCasingRate => 'Please select a casing rate.';
+  String get depthErrorMissingCasingRate =>
+      'Please select or enter a valid casing rate.';
+
+  @override
+  String get depthErrorInvalidBaseRate =>
+      'Please select or enter a valid base rate.';
 
   @override
   String get billForClientTitle => 'Generate bill for a client';
@@ -79,6 +84,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectCasingRateHint => 'Select casing rate';
 
   @override
+  String get customOption => 'Custom';
+
+  @override
+  String get customRateLabel => 'Custom Rate (₹/ft)';
+
+  @override
+  String get additionalChargesHeading => 'Additional Charges';
+
+  @override
+  String get collarQtyLabel => 'Collar';
+
+  @override
+  String get weldingQtyLabel => 'Welding';
+
+  @override
+  String get cuttingQtyLabel => 'Cutting';
+
+  @override
+  String get capQtyLabel => 'Cap';
+
+  @override
+  String get perUnitSuffix => '/unit';
+
+  @override
+  String get piecesUnit => 'Nos';
+
+  @override
+  String get customQtyLabel => 'Custom Quantity';
+
+  @override
   String get calculateBill => 'Calculate Bill';
 
   @override
@@ -118,29 +153,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fixedChargeDetail => 'Fixed charge';
 
   @override
-  String get editFixedCharges => 'Edit Fixed Charges';
+  String get editFixedCharges => 'Edit Rates';
 
   @override
-  String get fixedChargesHint => 'These charges are added to every bill.';
+  String get defaultRatesHeading => 'Default Rates';
 
   @override
-  String get collarLabel => 'Collar';
+  String get defaultRatesHint =>
+      'These are pre-selected on the home screen for every new bill.';
 
   @override
-  String get weldingLabel => 'Welding';
+  String get defaultBaseRateLabel => 'Default Base Rate';
 
   @override
-  String get cuttingLabel => 'Cutting';
+  String get defaultCasingRateLabel => 'Default Casing Rate';
 
   @override
-  String get capLabel => 'Cap';
+  String get invalidDefaultRates =>
+      'Please select or enter a valid rate for both defaults.';
+
+  @override
+  String get itemRatesHeading => 'Item Rates';
+
+  @override
+  String get fixedChargesHint =>
+      'Set the per-unit rate for each item. On the bill, this rate is multiplied by the quantity you enter.';
+
+  @override
+  String get collarLabel => 'Collar (per unit)';
+
+  @override
+  String get weldingLabel => 'Welding (per unit)';
+
+  @override
+  String get cuttingLabel => 'Cutting (per unit)';
+
+  @override
+  String get capLabel => 'Cap (per unit)';
 
   @override
   String get invalidFixedCharges =>
       'Please enter a valid amount for every charge.';
 
   @override
-  String get fixedChargesSaved => 'Fixed charges saved';
+  String get fixedChargesSaved => 'Rates saved';
 
   @override
   String get save => 'Save';

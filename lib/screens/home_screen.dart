@@ -14,6 +14,7 @@ import '../services/report_history_service.dart';
 import '../widgets/depth_input_card.dart';
 import '../widgets/language_switcher.dart';
 import '../widgets/large_button.dart';
+import '../widgets/quantity_rate_field.dart';
 import '../widgets/rate_picker_field.dart';
 import '../widgets/responsive_center.dart';
 import '../widgets/result_card.dart';
@@ -32,6 +33,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _depthController = TextEditingController();
   final _casingFeetController = TextEditingController();
+  int _collarQty = 0;
+  int _weldingQty = 0;
+  int _cuttingQty = 0;
+  int _capQty = 0;
   final _resultKey = GlobalKey();
 
   bool _billForClient = false;
@@ -69,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return l10n.depthErrorEmpty;
       case DepthError.invalid:
         return l10n.depthErrorInvalid;
+      case DepthError.invalidBaseRate:
       case DepthError.casingEmpty:
       case DepthError.invalidCasing:
       case DepthError.missingCasingRate:
@@ -84,7 +90,35 @@ class _HomeScreenState extends State<HomeScreen> {
       case DepthError.invalidCasing:
         return l10n.depthErrorInvalidCasing;
       case DepthError.missingCasingRate:
+      case DepthError.invalidBaseRate:
+      case DepthError.empty:
+      case DepthError.invalid:
+      case null:
+        return null;
+    }
+  }
+
+  String? _casingRateErrorText(AppLocalizations l10n, DepthError? error) {
+    switch (error) {
+      case DepthError.missingCasingRate:
         return l10n.depthErrorMissingCasingRate;
+      case DepthError.invalidBaseRate:
+      case DepthError.casingEmpty:
+      case DepthError.invalidCasing:
+      case DepthError.empty:
+      case DepthError.invalid:
+      case null:
+        return null;
+    }
+  }
+
+  String? _baseRateErrorText(AppLocalizations l10n, DepthError? error) {
+    switch (error) {
+      case DepthError.invalidBaseRate:
+        return l10n.depthErrorInvalidBaseRate;
+      case DepthError.casingEmpty:
+      case DepthError.invalidCasing:
+      case DepthError.missingCasingRate:
       case DepthError.empty:
       case DepthError.invalid:
       case null:
@@ -94,7 +128,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onCalculate(BillProvider provider) {
     FocusScope.of(context).unfocus();
-    provider.calculate(_depthController.text, _casingFeetController.text);
+    provider.calculate(
+      _depthController.text,
+      _casingFeetController.text,
+      collarQtyInput: _collarQty.toString(),
+      weldingQtyInput: _weldingQty.toString(),
+      cuttingQtyInput: _cuttingQty.toString(),
+      capQtyInput: _capQty.toString(),
+    );
     if (provider.result != null) {
       HapticFeedback.mediumImpact();
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -121,6 +162,10 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _billForClient = false;
       _clientNameError = null;
+      _collarQty = 0;
+      _weldingQty = 0;
+      _cuttingQty = 0;
+      _capQty = 0;
     });
     provider.reset();
   }
@@ -320,6 +365,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   children: [
                     Icon(
+                      Icons.speed_outlined,
+                      size: 20,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.drillingHeading,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: RatePickerField(
+                      key: ValueKey('base_rate_${provider.version}'),
+                      label: l10n.baseRateLabel,
+                      icon: Icons.sell_outlined,
+                      options: baseDrillingRateOptions,
+                      value: provider.baseRate,
+                      placeholder: l10n.selectRateHint,
+                      customOptionLabel: l10n.customOption,
+                      customRateLabel: l10n.customRateLabel,
+                      errorText: _baseRateErrorText(l10n, provider.depthError),
+                      onSelected: provider.selectBaseRate,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Icon(
                       Icons.plumbing_outlined,
                       size: 20,
                       color: theme.colorScheme.primary,
@@ -364,7 +443,91 @@ class _HomeScreenState extends State<HomeScreen> {
                           options: casingRateOptions,
                           value: provider.casingRate,
                           placeholder: l10n.selectCasingRateHint,
+                          customOptionLabel: l10n.customOption,
+                          customRateLabel: l10n.customRateLabel,
+                          errorText: _casingRateErrorText(
+                            l10n,
+                            provider.depthError,
+                          ),
                           onSelected: provider.selectCasingRate,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.construction_outlined,
+                      size: 20,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.additionalChargesHeading,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        QuantityRateField(
+                          key: ValueKey('collar_qty_${provider.version}'),
+                          value: _collarQty,
+                          label: l10n.collarQtyLabel,
+                          icon: Icons.donut_large_outlined,
+                          rate: provider.fixedCharges.collar,
+                          perUnitSuffix: l10n.perUnitSuffix,
+                          piecesUnit: l10n.piecesUnit,
+                          customOptionLabel: l10n.customOption,
+                          customQtyLabel: l10n.customQtyLabel,
+                          onChanged: (qty) => setState(() => _collarQty = qty),
+                        ),
+                        const SizedBox(height: 12),
+                        QuantityRateField(
+                          key: ValueKey('welding_qty_${provider.version}'),
+                          value: _weldingQty,
+                          label: l10n.weldingQtyLabel,
+                          icon: Icons.local_fire_department_outlined,
+                          rate: provider.fixedCharges.welding,
+                          perUnitSuffix: l10n.perUnitSuffix,
+                          piecesUnit: l10n.piecesUnit,
+                          customOptionLabel: l10n.customOption,
+                          customQtyLabel: l10n.customQtyLabel,
+                          onChanged: (qty) => setState(() => _weldingQty = qty),
+                        ),
+                        const SizedBox(height: 12),
+                        QuantityRateField(
+                          key: ValueKey('cutting_qty_${provider.version}'),
+                          value: _cuttingQty,
+                          label: l10n.cuttingQtyLabel,
+                          icon: Icons.content_cut_rounded,
+                          rate: provider.fixedCharges.cutting,
+                          perUnitSuffix: l10n.perUnitSuffix,
+                          piecesUnit: l10n.piecesUnit,
+                          customOptionLabel: l10n.customOption,
+                          customQtyLabel: l10n.customQtyLabel,
+                          onChanged: (qty) => setState(() => _cuttingQty = qty),
+                        ),
+                        const SizedBox(height: 12),
+                        QuantityRateField(
+                          key: ValueKey('cap_qty_${provider.version}'),
+                          value: _capQty,
+                          label: l10n.capQtyLabel,
+                          icon: Icons.circle_outlined,
+                          rate: provider.fixedCharges.cap,
+                          perUnitSuffix: l10n.perUnitSuffix,
+                          piecesUnit: l10n.piecesUnit,
+                          customOptionLabel: l10n.customOption,
+                          customQtyLabel: l10n.customQtyLabel,
+                          onChanged: (qty) => setState(() => _capQty = qty),
                         ),
                       ],
                     ),
@@ -455,37 +618,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.speed_outlined,
-                      size: 20,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.drillingHeading,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: RatePickerField(
-                      key: ValueKey('base_rate_${provider.version}'),
-                      label: l10n.baseRateLabel,
-                      icon: Icons.sell_outlined,
-                      options: baseDrillingRateOptions,
-                      value: provider.baseRate,
-                      placeholder: l10n.selectRateHint,
-                      onSelected: provider.selectBaseRate,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
                 LargeButton(
                   label: l10n.calculateBill,
                   icon: Icons.calculate_outlined,

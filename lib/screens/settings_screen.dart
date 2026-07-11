@@ -3,14 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../models/default_rates.dart';
+import '../models/drilling_rate_band.dart';
 import '../models/fixed_charges.dart';
 import '../providers/bill_provider.dart';
 import '../widgets/large_button.dart';
+import '../widgets/rate_picker_field.dart';
 import '../widgets/responsive_center.dart';
 
-/// Lets the user edit the fixed charges (COLLAR/WELDING/CUTTING/CAP) added
-/// to every bill. Saving persists the values via SharedPreferences so
-/// they're used the next time the app opens.
+/// Lets the user edit the default base/casing rates (pre-selected on every
+/// new bill) and the per-unit rates for COLLAR/WELDING/CUTTING/CAP. Saving
+/// persists everything via SharedPreferences so it's used the next time
+/// the app opens.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -19,6 +23,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late double _selectedBaseRate;
+  late double _selectedCasingRate;
   late final TextEditingController _collarController;
   late final TextEditingController _weldingController;
   late final TextEditingController _cuttingController;
@@ -28,7 +34,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    final charges = context.read<BillProvider>().savedFixedCharges;
+    final provider = context.read<BillProvider>();
+    final rates = provider.savedDefaultRates;
+    _selectedBaseRate = rates.baseRate;
+    _selectedCasingRate = rates.casingRate;
+
+    final charges = provider.savedFixedCharges;
     _collarController = TextEditingController(
       text: charges.collar.toStringAsFixed(0),
     );
@@ -53,6 +64,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _save(AppLocalizations l10n) async {
+    if (_selectedBaseRate <= 0 || _selectedCasingRate <= 0) {
+      setState(() => _error = l10n.invalidDefaultRates);
+      return;
+    }
+
     final values = <double>[];
     for (final controller in [
       _collarController,
@@ -69,7 +85,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     setState(() => _error = null);
-    await context.read<BillProvider>().saveFixedCharges(
+    final provider = context.read<BillProvider>();
+    await provider.saveDefaultRates(
+      DefaultRates(
+        baseRate: _selectedBaseRate,
+        casingRate: _selectedCasingRate,
+      ),
+    );
+    await provider.saveFixedCharges(
       FixedCharges(
         collar: values[0],
         welding: values[1],
@@ -132,6 +155,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            Text(l10n.defaultRatesHeading, style: theme.textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(
+                  Icons.sell_outlined,
+                  size: 18,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.defaultRatesHint,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            RatePickerField(
+              label: l10n.defaultBaseRateLabel,
+              icon: Icons.speed_outlined,
+              options: baseDrillingRateOptions,
+              value: _selectedBaseRate,
+              placeholder: l10n.selectRateHint,
+              customOptionLabel: l10n.customOption,
+              customRateLabel: l10n.customRateLabel,
+              onSelected: (rate) => setState(() => _selectedBaseRate = rate),
+            ),
+            const SizedBox(height: 16),
+            RatePickerField(
+              label: l10n.defaultCasingRateLabel,
+              icon: Icons.plumbing_outlined,
+              options: casingRateOptions,
+              value: _selectedCasingRate,
+              placeholder: l10n.selectCasingRateHint,
+              customOptionLabel: l10n.customOption,
+              customRateLabel: l10n.customRateLabel,
+              onSelected: (rate) => setState(() => _selectedCasingRate = rate),
+            ),
+            const SizedBox(height: 28),
+            Text(l10n.itemRatesHeading, style: theme.textTheme.titleMedium),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Icon(

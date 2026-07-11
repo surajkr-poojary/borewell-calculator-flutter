@@ -4,59 +4,61 @@ import 'package:flutter/services.dart';
 
 import '../utils/currency_formatter.dart';
 
-/// Sentinel used only to identify the "Custom" entry inside the web
-/// dropdown's item list — never surfaced outside this widget. Real rates
-/// are always positive, so a negative value can never collide with one.
-const double _customSentinel = -1;
+/// Sentinel used only to identify "Custom, not yet entered" — quantities
+/// are never negative, so this can't collide with a real count (including
+/// the valid preset `0`).
+const int _customSentinel = -1;
+
+const List<int> _presetQuantities = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 /// A tappable field that opens a bottom sheet (or, on web, an anchored
-/// dropdown) listing [options] (₹ per ft) plus a "Custom" entry that
-/// reveals an inline text field for typing an arbitrary rate. Used for the
-/// base drilling rate and casing (GI) rate pickers, on both the home
-/// screen and the Settings defaults.
-///
-/// [value] of `0` is treated as "Custom selected, not yet entered" — the
-/// same sentinel the rest of the app's validation already treats as
-/// missing/invalid, so callers just need to check `value <= 0`.
-class RatePickerField extends StatefulWidget {
+/// dropdown) listing quantities 0–10 plus a "Custom" entry that reveals an
+/// inline text field for typing an arbitrary count. Used for the
+/// piece-priced Additional Charges (COLLAR/WELDING/CUTTING/CAP), labelled
+/// with the item's current per-unit rate so the user knows the price
+/// while picking a count.
+class QuantityRateField extends StatefulWidget {
+  final int? value;
   final String label;
   final IconData icon;
-  final List<double> options;
-  final double? value;
-  final String placeholder;
+  final double rate;
+  final String perUnitSuffix;
+  final String piecesUnit;
   final String customOptionLabel;
-  final String customRateLabel;
-  final String? errorText;
-  final ValueChanged<double> onSelected;
+  final String customQtyLabel;
+  final ValueChanged<int> onChanged;
 
-  const RatePickerField({
+  const QuantityRateField({
     super.key,
+    required this.value,
     required this.label,
     required this.icon,
-    required this.options,
-    required this.value,
-    required this.placeholder,
+    required this.rate,
+    required this.perUnitSuffix,
+    required this.piecesUnit,
     required this.customOptionLabel,
-    required this.customRateLabel,
-    required this.onSelected,
-    this.errorText,
+    required this.customQtyLabel,
+    required this.onChanged,
   });
 
   @override
-  State<RatePickerField> createState() => _RatePickerFieldState();
+  State<QuantityRateField> createState() => _QuantityRateFieldState();
 }
 
-class _RatePickerFieldState extends State<RatePickerField> {
+class _QuantityRateFieldState extends State<QuantityRateField> {
   late final TextEditingController _customController;
 
   bool get _isCustom =>
-      widget.value != null && !widget.options.contains(widget.value);
+      widget.value != null && !_presetQuantities.contains(widget.value);
+
+  String get _fieldLabel =>
+      '${widget.label} (${CurrencyFormatter.format(widget.rate)}${widget.perUnitSuffix})';
 
   @override
   void initState() {
     super.initState();
-    final initialText = _isCustom && widget.value! > 0
-        ? widget.value!.toStringAsFixed(0)
+    final initialText = _isCustom && widget.value! >= 0
+        ? widget.value!.toString()
         : '';
     _customController = TextEditingController(text: initialText);
   }
@@ -65,12 +67,6 @@ class _RatePickerFieldState extends State<RatePickerField> {
   void dispose() {
     _customController.dispose();
     super.dispose();
-  }
-
-  void _selectCustom() {
-    // 0 marks the custom field as empty until the user types a value —
-    // never a valid rate, so callers' validation treats it as missing.
-    widget.onSelected(widget.value != null && _isCustom ? widget.value! : 0);
   }
 
   Future<void> _openPicker(BuildContext context) {
@@ -98,37 +94,45 @@ class _RatePickerFieldState extends State<RatePickerField> {
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(widget.label, style: theme.textTheme.titleMedium),
+                  child: Text(_fieldLabel, style: theme.textTheme.titleMedium),
                 ),
               ),
-              for (final option in widget.options)
-                ListTile(
-                  leading: const Icon(Icons.sell_outlined),
-                  title: Text('${CurrencyFormatter.format(option)} / ft'),
-                  trailing: widget.value == option
-                      ? Icon(
-                          Icons.check_rounded,
-                          color: theme.colorScheme.primary,
-                        )
-                      : null,
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    widget.onSelected(option);
-                  },
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 320),
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    for (final option in _presetQuantities)
+                      ListTile(
+                        leading: const Icon(Icons.numbers_rounded),
+                        title: Text('$option ${widget.piecesUnit}'),
+                        trailing: widget.value == option
+                            ? Icon(
+                                Icons.check_rounded,
+                                color: theme.colorScheme.primary,
+                              )
+                            : null,
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          widget.onChanged(option);
+                        },
+                      ),
+                    ListTile(
+                      leading: const Icon(Icons.edit_outlined),
+                      title: Text(widget.customOptionLabel),
+                      trailing: _isCustom
+                          ? Icon(
+                              Icons.check_rounded,
+                              color: theme.colorScheme.primary,
+                            )
+                          : null,
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        if (!_isCustom) widget.onChanged(_customSentinel);
+                      },
+                    ),
+                  ],
                 ),
-              ListTile(
-                leading: const Icon(Icons.edit_outlined),
-                title: Text(widget.customOptionLabel),
-                trailing: _isCustom
-                    ? Icon(
-                        Icons.check_rounded,
-                        color: theme.colorScheme.primary,
-                      )
-                    : null,
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _selectCustom();
-                },
               ),
               const SizedBox(height: 8),
             ],
@@ -141,19 +145,19 @@ class _RatePickerFieldState extends State<RatePickerField> {
   /// On web, an anchored dropdown menu reads far more naturally than a
   /// mobile-style bottom sheet sliding up over the page.
   Widget _buildWebDropdown(BuildContext context) {
-    return DropdownButtonFormField<double>(
+    return DropdownButtonFormField<int>(
       initialValue: _isCustom ? _customSentinel : widget.value,
       decoration: InputDecoration(
-        labelText: widget.label,
+        labelText: _fieldLabel,
         prefixIcon: Icon(widget.icon),
       ),
-      hint: Text(widget.placeholder),
+      hint: const Text('0'),
       icon: const Icon(Icons.expand_more_rounded),
       items: [
-        for (final option in widget.options)
+        for (final option in _presetQuantities)
           DropdownMenuItem(
             value: option,
-            child: Text('${CurrencyFormatter.format(option)} / ft'),
+            child: Text('$option ${widget.piecesUnit}'),
           ),
         DropdownMenuItem(
           value: _customSentinel,
@@ -163,9 +167,9 @@ class _RatePickerFieldState extends State<RatePickerField> {
       onChanged: (selected) {
         if (selected == null) return;
         if (selected == _customSentinel) {
-          _selectCustom();
+          if (!_isCustom) widget.onChanged(_customSentinel);
         } else {
-          widget.onSelected(selected);
+          widget.onChanged(selected);
         }
       },
     );
@@ -177,16 +181,14 @@ class _RatePickerFieldState extends State<RatePickerField> {
       onTap: () => _openPicker(context),
       child: InputDecorator(
         decoration: InputDecoration(
-          labelText: widget.label,
+          labelText: _fieldLabel,
           prefixIcon: Icon(widget.icon),
           suffixIcon: const Icon(Icons.expand_more_rounded),
         ),
         child: Text(
           _isCustom
               ? widget.customOptionLabel
-              : (widget.value != null
-                    ? '${CurrencyFormatter.format(widget.value!)} / ft'
-                    : widget.placeholder),
+              : '${widget.value ?? 0} ${widget.piecesUnit}',
         ),
       ),
     );
@@ -209,13 +211,12 @@ class _RatePickerFieldState extends State<RatePickerField> {
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: InputDecoration(
-            labelText: widget.customRateLabel,
-            prefixText: '₹ ',
-            errorText: widget.errorText,
+            labelText: widget.customQtyLabel,
+            suffixText: widget.piecesUnit,
           ),
           onChanged: (text) {
-            final parsed = double.tryParse(text.trim());
-            widget.onSelected(parsed ?? 0);
+            final parsed = int.tryParse(text.trim());
+            widget.onChanged(parsed ?? _customSentinel);
           },
         ),
       ],
