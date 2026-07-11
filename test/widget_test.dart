@@ -3,18 +3,77 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:borewell_bill_calculator/main.dart';
+import 'package:borewell_bill_calculator/widgets/rate_picker_field.dart';
 
-// Note: pumpAndSettle() is avoided here because the initial loading state
-// briefly shows an indeterminate CircularProgressIndicator, whose repeating
-// animation never lets pumpAndSettle's frame-scheduling check settle.
+// Note: pumpAndSettle() is avoided throughout this file because the app
+// bar's wave animation (WaveAppBarBottom) repeats indefinitely on every
+// screen, so pumpAndSettle's frame-scheduling check never converges.
+// Fixed-duration pumps are used instead.
+//
+// A realistic (not artificially tall) surface size is used, and elements
+// are explicitly scrolled into view before tapping — modal bottom sheets
+// anchor to the bottom of the actual viewport, and an oversized surface
+// was pushing their content past the sheet's own bounds.
 Future<void> _pumpUntilLoaded(WidgetTester tester) async {
-  // Tall surface so the whole form (depth field + 4 slab cards + buttons)
-  // renders without needing to scroll the lazy ListView.
-  await tester.binding.setSurfaceSize(const Size(400, 2000));
+  await tester.binding.setSurfaceSize(const Size(400, 1000));
   addTearDown(() => tester.binding.setSurfaceSize(null));
 
   await tester.pumpWidget(const BorewellBillCalculatorApp());
   await tester.pump();
+  // App starts on SplashScreen, which holds for a minimum 1400ms before
+  // fading into HomeScreen over another 500ms transition.
+  await tester.pump(const Duration(milliseconds: 1500));
+  await tester.pump(const Duration(milliseconds: 600));
+  await tester.pump(const Duration(milliseconds: 300));
+}
+
+/// Scrolls [finder] into view (if it sits in a Scrollable) and taps it.
+Future<void> _tap(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pump();
+  await tester.tap(finder);
+}
+
+/// Scrolls [finder] into view and enters [text] into it.
+Future<void> _enterText(WidgetTester tester, Finder finder, String text) async {
+  await tester.ensureVisible(finder);
+  await tester.pump();
+  await tester.enterText(finder, text);
+}
+
+/// Scrolls [finder] into view (results render below the fold and a plain
+/// ListView only builds what's within the visible + cache extent) and
+/// asserts exactly one match.
+Future<void> _expectVisible(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pump();
+  expect(finder, findsOneWidget);
+}
+
+/// Opens the bottom sheet for the [fieldFinder] rate picker (tapped via its
+/// widget, not its floating label text — the label's shrink transform can
+/// throw off tap-offset hit-testing), taps the option matching
+/// [optionText], then pumps past the sheet's open/close animations.
+Future<void> _pickRate(WidgetTester tester, Finder fieldFinder, String optionText) async {
+  await _tap(tester, fieldFinder);
+
+  // Poll until the option's on-screen position stops moving (rather than
+  // guessing a fixed delay) — tapping while the sheet's open animation is
+  // still sliding computes a coordinate that's stale by the time the tap
+  // actually lands, which can hit the wrong (adjacent) list tile.
+  final optionFinder = find.text(optionText);
+  Rect? previousRect;
+  for (var i = 0; i < 20; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+    final rect = tester.getRect(optionFinder);
+    if (previousRect == rect) break;
+    previousRect = rect;
+  }
+
+  await tester.tap(optionFinder);
+  // Let the sheet's close animation fully finish before the caller does
+  // anything else — a still-closing sheet's barrier can eat the next tap.
+  await tester.pump(const Duration(milliseconds: 500));
   await tester.pump(const Duration(milliseconds: 300));
 }
 
@@ -23,73 +82,121 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('Home screen loads with title, depth field, and slabs',
+  testWidgets(
+      'Home screen loads with title, depth field, drilling and casing sections',
       (WidgetTester tester) async {
     await _pumpUntilLoaded(tester);
 
     expect(find.text('Borewell Bill Calculator'), findsWidgets);
-    expect(find.text('Total Depth (Feet)'), findsOneWidget);
-    expect(find.text('0 - 200 ft'), findsOneWidget);
-    expect(find.text('Calculate Bill'), findsOneWidget);
+    expect(find.text('TOTAL DEPTH'), findsOneWidget);
+    expect(find.text('Drilling Rate'), findsOneWidget);
+    expect(find.text('Casing'), findsOneWidget);
+
+    // Below the fold until scrolled — ListView only builds what's within
+    // the visible + cache extent.
+    final calculateButton = find.text('Calculate Bill');
+    await tester.ensureVisible(calculateButton);
+    await tester.pump();
+    expect(calculateButton, findsOneWidget);
   });
 
   testWidgets('Calculating with an empty depth shows a validation error',
       (WidgetTester tester) async {
     await _pumpUntilLoaded(tester);
 
-    await tester.tap(find.text('Calculate Bill'));
+    await _tap(tester, find.text('Calculate Bill'));
     await tester.pump();
 
     expect(find.text('Please enter borewell depth.'), findsOneWidget);
   });
 
-  testWidgets('Calculating 450 ft produces the expected total',
+  testWidgets(
+      'Calculating 450 ft at the default base rate produces the expected total',
       (WidgetTester tester) async {
     await _pumpUntilLoaded(tester);
 
-    await tester.enterText(find.byType(TextField).first, '450');
-    await tester.tap(find.text('Calculate Bill'));
+    // 0-300ft: 300x100=30000, 300-350: 50x105=5250, 350-400: 50x110=5500,
+    // 400-450: 50x115=5750 => drilling 46500 + fixed charges 1400 = 47900.
+    await _enterText(tester, find.byType(TextField).first, '450');
+    await _tap(tester, find.text('Calculate Bill'));
     await tester.pump();
 
-    expect(find.text('₹1,50,000'), findsOneWidget);
+    await _expectVisible(tester, find.text('COLLAR'));
+    await _expectVisible(tester, find.text('₹47,900'));
   });
 
-  testWidgets('Calculating 680 ft matches the spec worked example',
+  testWidgets('Calculating 850 ft continues past 700ft at the capped rate',
       (WidgetTester tester) async {
     await _pumpUntilLoaded(tester);
 
-    await tester.enterText(find.byType(TextField).first, '680');
-    await tester.tap(find.text('Calculate Bill'));
+    await _enterText(tester, find.byType(TextField).first, '850');
+    await _tap(tester, find.text('Calculate Bill'));
     await tester.pump();
 
-    expect(find.text('601 - 680 ft'), findsOneWidget);
-    expect(find.text('₹2,46,000'), findsOneWidget);
+    await _expectVisible(tester, find.text('701 ft and above'));
+    await _expectVisible(tester, find.text('₹1,07,900'));
   });
 
-  testWidgets('Settings screen opens and saves new default rates',
+  testWidgets('Selecting a different base drilling rate changes the total',
       (WidgetTester tester) async {
     await _pumpUntilLoaded(tester);
 
-    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await _pickRate(tester, find.byType(RatePickerField).first, '₹120 / ft');
+
+    // 0-300ft billed entirely in the base band: 300 x 120 = 36000,
+    // + fixed charges 1400 = 37400.
+    await _enterText(tester, find.byType(TextField).first, '300');
+    await _tap(tester, find.text('Calculate Bill'));
+    await tester.pump();
+
+    await _expectVisible(tester, find.text('₹37,400'));
+  });
+
+  testWidgets(
+      'Casing feet without a selected casing rate is rejected, then succeeds once picked',
+      (WidgetTester tester) async {
+    await _pumpUntilLoaded(tester);
+
+    await _enterText(tester, find.byType(TextField).first, '300');
+    await _enterText(tester, find.byType(TextField).at(1), '50');
+    await _tap(tester, find.text('Calculate Bill'));
+    await tester.pump();
+
+    await _expectVisible(tester, find.text('Please select a casing rate.'));
+
+    await _pickRate(tester, find.byType(RatePickerField).at(1), '₹500 / ft');
+    await _tap(tester, find.text('Calculate Bill'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
-    expect(find.text('Edit Default Rates'), findsOneWidget);
+    // Drilling 300x100=30000 + casing 50x500=25000 + fixed 1400 = 56400.
+    await _expectVisible(tester, find.text('Casing (GI)'));
+    await _expectVisible(tester, find.text('₹56,400'));
+  });
 
-    // The old route stays mounted (offstage) during/after the push
-    // transition, so scope the finder to the visible "0 - 200 ft" field
-    // by its label instead of relying on tree order via `.first`.
-    await tester.enterText(
-        find.widgetWithText(TextField, '0 - 200 ft'), '320');
-    await tester.tap(find.text('Save'));
-    // Safe to settle here (unlike the initial load): no indeterminate
-    // spinner remains, just the page-pop transition animation finishing.
-    await tester.pumpAndSettle();
+  testWidgets('Settings screen edits a fixed charge and it reflects on the next bill',
+      (WidgetTester tester) async {
+    await _pumpUntilLoaded(tester);
 
-    // Back on the home screen, the new (non-preset) default rate should
-    // now show as a custom amount on the first slab.
-    expect(find.text('Edit Default Rates'), findsNothing);
-    expect(find.text('Custom Rate'), findsOneWidget);
-    expect(find.text('320'), findsOneWidget);
+    await _tap(tester, find.byIcon(Icons.settings_outlined));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Edit Fixed Charges'), findsOneWidget);
+
+    await _enterText(tester, find.widgetWithText(TextField, 'Collar'), '700');
+    await _tap(tester, find.text('Save'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(find.text('Edit Fixed Charges'), findsNothing);
+
+    await _enterText(tester, find.byType(TextField).first, '10');
+    await _tap(tester, find.text('Calculate Bill'));
+    await tester.pump();
+
+    // Drilling 10x100=1000 + collar 700 + welding/cutting/cap 300 each = 2600.
+    await _expectVisible(tester, find.text('₹700'));
+    await _expectVisible(tester, find.text('₹2,600'));
   });
 }

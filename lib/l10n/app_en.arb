@@ -2,7 +2,7 @@
   "@@locale": "en",
 
   "appTitle": "Borewell Bill Calculator",
-  "appTagline": "Fast, accurate slab-wise billing",
+  "appTagline": "Fast, accurate borewell billing",
   "languageTooltip": "Change language",
 
   "totalDepthLabel": "TOTAL DEPTH",
@@ -10,7 +10,9 @@
 
   "depthErrorEmpty": "Please enter borewell depth.",
   "depthErrorInvalid": "Please enter a valid borewell depth.",
-  "depthErrorCustomRate": "Please enter custom rate.",
+  "depthErrorCasingEmpty": "Please enter casing feet.",
+  "depthErrorInvalidCasing": "Please enter a valid casing depth.",
+  "depthErrorMissingCasingRate": "Please select a casing rate.",
 
   "billForClientTitle": "Generate bill for a client",
   "billForClientSubtitle": "Adds their name/contact to the shared or downloaded PDF",
@@ -19,10 +21,14 @@
   "clientPhoneLabel": "Phone (optional)",
   "clientAddressLabel": "Address (optional)",
 
-  "rateSlabsHeading": "Rate Slabs",
-  "rateLabel": "Rate",
-  "customOption": "Custom",
-  "customRateLabel": "Custom Rate",
+  "drillingHeading": "Drilling Rate",
+  "baseRateLabel": "Base Rate",
+  "selectRateHint": "Select rate",
+
+  "casingHeading": "Casing",
+  "casingFeetLabel": "Casing Feet",
+  "casingRateLabel": "Casing Rate (GI)",
+  "selectCasingRateHint": "Select casing rate",
 
   "calculateBill": "Calculate Bill",
   "reset": "Reset",
@@ -38,11 +44,16 @@
 
   "billBreakdown": "Bill Breakdown",
   "totalAmount": "Total Amount",
+  "fixedChargeDetail": "Fixed charge",
 
-  "editDefaultRates": "Edit Default Rates",
-  "defaultRatesHint": "These rates are used every time the app opens.",
-  "invalidRateForEverySlab": "Please enter a valid rate for every slab.",
-  "defaultRatesSaved": "Default rates saved",
+  "editFixedCharges": "Edit Fixed Charges",
+  "fixedChargesHint": "These charges are added to every bill.",
+  "collarLabel": "Collar",
+  "weldingLabel": "Welding",
+  "cuttingLabel": "Cutting",
+  "capLabel": "Cap",
+  "invalidFixedCharges": "Please enter a valid amount for every charge.",
+  "fixedChargesSaved": "Fixed charges saved",
   "save": "Save",
 
   "pdfTitle": "Borewell Bill",
@@ -59,9 +70,22 @@
       "depth": { "type": "int" }
     }
   },
-  "pdfDepthRange": "Depth Range",
-  "pdfFeet": "Feet",
-  "pdfRatePerFt": "Rate/ft",
+  "pdfBaseRate": "Base Rate: {rate}/ft",
+  "@pdfBaseRate": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "pdfDescription": "Description",
+  "pdfDetail": "Detail",
   "pdfAmount": "Amount",
-  "pdfTotalAmount": "Total Amount"
+  "pdfTotalAmount": "Total Amount",
+
+  "historyTooltip": "Report history",
+  "historyTitle": "Report History",
+  "historyEmpty": "No saved reports yet",
+  "historyEmptySubtitle": "Generated bills will appear here once you share or download a PDF.",
+  "historyDeleteTooltip": "Delete",
+  "historyDeleted": "Report deleted",
+  "walkInClient": "Walk-in customer"
 }

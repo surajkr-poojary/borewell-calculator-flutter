@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
-/// Brand colors: the seed teal (used solid on the header/buttons) and a
-/// warm amber used sparingly to draw the eye to the final total amount.
+/// Brand colors: an earthy soil brown (used solid on the header/buttons),
+/// evoking groundwater/drilling, and a deep green used sparingly to draw
+/// the eye to the final total amount. `water` is a cool accent reserved for
+/// the watery decorative touches (waves, ripples) layered on top of the
+/// warm soil palette.
 class AppColors {
   AppColors._();
 
-  static const teal = Color(0xFF0F9B8E);
-  static const tealDeep = Color(0xFF0B6E64);
-  static const amber = Color(0xFFB4690E);
+  static const soil = Color(0xFF6B4F3B);
+  static const soilDeep = Color(0xFF4A3728);
+  static const green = Color(0xFF2F855A);
+  static const water = Color(0xFF7DD3FC);
 }
 
 const _fontFamily = 'Inter';
@@ -16,7 +20,7 @@ const _fontFamilyFallback = ['NotoSansKannada'];
 ThemeData buildAppTheme(Brightness brightness) {
   final isDark = brightness == Brightness.dark;
   final colorScheme = ColorScheme.fromSeed(
-    seedColor: AppColors.teal,
+    seedColor: AppColors.soil,
     brightness: brightness,
   );
 
@@ -30,7 +34,7 @@ ThemeData buildAppTheme(Brightness brightness) {
 
   return base.copyWith(
     appBarTheme: AppBarTheme(
-      backgroundColor: isDark ? AppColors.tealDeep : AppColors.teal,
+      backgroundColor: isDark ? AppColors.soilDeep : AppColors.soil,
       foregroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 2,

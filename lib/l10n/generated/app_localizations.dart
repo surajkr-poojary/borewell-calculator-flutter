@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Fast, accurate slab-wise billing'**
+  /// **'Fast, accurate borewell billing'**
   String get appTagline;
 
   /// No description provided for @languageTooltip.
@@ -140,11 +140,23 @@ abstract class AppLocalizations {
   /// **'Please enter a valid borewell depth.'**
   String get depthErrorInvalid;
 
-  /// No description provided for @depthErrorCustomRate.
+  /// No description provided for @depthErrorCasingEmpty.
   ///
   /// In en, this message translates to:
-  /// **'Please enter custom rate.'**
-  String get depthErrorCustomRate;
+  /// **'Please enter casing feet.'**
+  String get depthErrorCasingEmpty;
+
+  /// No description provided for @depthErrorInvalidCasing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid casing depth.'**
+  String get depthErrorInvalidCasing;
+
+  /// No description provided for @depthErrorMissingCasingRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a casing rate.'**
+  String get depthErrorMissingCasingRate;
 
   /// No description provided for @billForClientTitle.
   ///
@@ -182,29 +194,47 @@ abstract class AppLocalizations {
   /// **'Address (optional)'**
   String get clientAddressLabel;
 
-  /// No description provided for @rateSlabsHeading.
+  /// No description provided for @drillingHeading.
   ///
   /// In en, this message translates to:
-  /// **'Rate Slabs'**
-  String get rateSlabsHeading;
+  /// **'Drilling Rate'**
+  String get drillingHeading;
 
-  /// No description provided for @rateLabel.
+  /// No description provided for @baseRateLabel.
   ///
   /// In en, this message translates to:
-  /// **'Rate'**
-  String get rateLabel;
+  /// **'Base Rate'**
+  String get baseRateLabel;
 
-  /// No description provided for @customOption.
+  /// No description provided for @selectRateHint.
   ///
   /// In en, this message translates to:
-  /// **'Custom'**
-  String get customOption;
+  /// **'Select rate'**
+  String get selectRateHint;
 
-  /// No description provided for @customRateLabel.
+  /// No description provided for @casingHeading.
   ///
   /// In en, this message translates to:
-  /// **'Custom Rate'**
-  String get customRateLabel;
+  /// **'Casing'**
+  String get casingHeading;
+
+  /// No description provided for @casingFeetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Casing Feet'**
+  String get casingFeetLabel;
+
+  /// No description provided for @casingRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Casing Rate (GI)'**
+  String get casingRateLabel;
+
+  /// No description provided for @selectCasingRateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select casing rate'**
+  String get selectCasingRateHint;
 
   /// No description provided for @calculateBill.
   ///
@@ -278,29 +308,59 @@ abstract class AppLocalizations {
   /// **'Total Amount'**
   String get totalAmount;
 
-  /// No description provided for @editDefaultRates.
+  /// No description provided for @fixedChargeDetail.
   ///
   /// In en, this message translates to:
-  /// **'Edit Default Rates'**
-  String get editDefaultRates;
+  /// **'Fixed charge'**
+  String get fixedChargeDetail;
 
-  /// No description provided for @defaultRatesHint.
+  /// No description provided for @editFixedCharges.
   ///
   /// In en, this message translates to:
-  /// **'These rates are used every time the app opens.'**
-  String get defaultRatesHint;
+  /// **'Edit Fixed Charges'**
+  String get editFixedCharges;
 
-  /// No description provided for @invalidRateForEverySlab.
+  /// No description provided for @fixedChargesHint.
   ///
   /// In en, this message translates to:
-  /// **'Please enter a valid rate for every slab.'**
-  String get invalidRateForEverySlab;
+  /// **'These charges are added to every bill.'**
+  String get fixedChargesHint;
 
-  /// No description provided for @defaultRatesSaved.
+  /// No description provided for @collarLabel.
   ///
   /// In en, this message translates to:
-  /// **'Default rates saved'**
-  String get defaultRatesSaved;
+  /// **'Collar'**
+  String get collarLabel;
+
+  /// No description provided for @weldingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Welding'**
+  String get weldingLabel;
+
+  /// No description provided for @cuttingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cutting'**
+  String get cuttingLabel;
+
+  /// No description provided for @capLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cap'**
+  String get capLabel;
+
+  /// No description provided for @invalidFixedCharges.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount for every charge.'**
+  String get invalidFixedCharges;
+
+  /// No description provided for @fixedChargesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed charges saved'**
+  String get fixedChargesSaved;
 
   /// No description provided for @save.
   ///
@@ -332,23 +392,23 @@ abstract class AppLocalizations {
   /// **'Total Depth: {depth} ft'**
   String pdfTotalDepth(int depth);
 
-  /// No description provided for @pdfDepthRange.
+  /// No description provided for @pdfBaseRate.
   ///
   /// In en, this message translates to:
-  /// **'Depth Range'**
-  String get pdfDepthRange;
+  /// **'Base Rate: {rate}/ft'**
+  String pdfBaseRate(String rate);
 
-  /// No description provided for @pdfFeet.
+  /// No description provided for @pdfDescription.
   ///
   /// In en, this message translates to:
-  /// **'Feet'**
-  String get pdfFeet;
+  /// **'Description'**
+  String get pdfDescription;
 
-  /// No description provided for @pdfRatePerFt.
+  /// No description provided for @pdfDetail.
   ///
   /// In en, this message translates to:
-  /// **'Rate/ft'**
-  String get pdfRatePerFt;
+  /// **'Detail'**
+  String get pdfDetail;
 
   /// No description provided for @pdfAmount.
   ///
@@ -361,6 +421,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Amount'**
   String get pdfTotalAmount;
+
+  /// No description provided for @historyTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Report history'**
+  String get historyTooltip;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report History'**
+  String get historyTitle;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved reports yet'**
+  String get historyEmpty;
+
+  /// No description provided for @historyEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated bills will appear here once you share or download a PDF.'**
+  String get historyEmptySubtitle;
+
+  /// No description provided for @historyDeleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get historyDeleteTooltip;
+
+  /// No description provided for @historyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Report deleted'**
+  String get historyDeleted;
+
+  /// No description provided for @walkInClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in customer'**
+  String get walkInClient;
 }
 
 class _AppLocalizationsDelegate

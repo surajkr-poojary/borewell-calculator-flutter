@@ -12,7 +12,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get appTitle => 'ಬೋರ್‌ವೆಲ್ ಬಿಲ್ ಕ್ಯಾಲ್ಕುಲೇಟರ್';
 
   @override
-  String get appTagline => 'ವೇಗದ, ನಿಖರ ಹಂತ-ಆಧಾರಿತ ಬಿಲ್ಲಿಂಗ್';
+  String get appTagline => 'ವೇಗದ, ನಿಖರ ಬೋರ್‌ವೆಲ್ ಬಿಲ್ಲಿಂಗ್';
 
   @override
   String get languageTooltip => 'ಭಾಷೆ ಬದಲಾಯಿಸಿ';
@@ -30,7 +30,15 @@ class AppLocalizationsKn extends AppLocalizations {
   String get depthErrorInvalid => 'ದಯವಿಟ್ಟು ಸರಿಯಾದ ಬೋರ್‌ವೆಲ್ ಆಳವನ್ನು ನಮೂದಿಸಿ.';
 
   @override
-  String get depthErrorCustomRate => 'ದಯವಿಟ್ಟು ನಿಗದಿತ ದರವನ್ನು ನಮೂದಿಸಿ.';
+  String get depthErrorCasingEmpty => 'ದಯವಿಟ್ಟು ಕೇಸಿಂಗ್ ಅಡಿಗಳನ್ನು ನಮೂದಿಸಿ.';
+
+  @override
+  String get depthErrorInvalidCasing =>
+      'ದಯವಿಟ್ಟು ಸರಿಯಾದ ಕೇಸಿಂಗ್ ಆಳವನ್ನು ನಮೂದಿಸಿ.';
+
+  @override
+  String get depthErrorMissingCasingRate =>
+      'ದಯವಿಟ್ಟು ಕೇಸಿಂಗ್ ದರವನ್ನು ಆಯ್ಕೆಮಾಡಿ.';
 
   @override
   String get billForClientTitle => 'ಗ್ರಾಹಕರಿಗಾಗಿ ಬಿಲ್ ರಚಿಸಿ';
@@ -52,16 +60,25 @@ class AppLocalizationsKn extends AppLocalizations {
   String get clientAddressLabel => 'ವಿಳಾಸ (ಐಚ್ಛಿಕ)';
 
   @override
-  String get rateSlabsHeading => 'ದರ ಹಂತಗಳು';
+  String get drillingHeading => 'ಕೊರೆಯುವ ದರ';
 
   @override
-  String get rateLabel => 'ದರ';
+  String get baseRateLabel => 'ಮೂಲ ದರ';
 
   @override
-  String get customOption => 'ಕಸ್ಟಮ್';
+  String get selectRateHint => 'ದರ ಆಯ್ಕೆಮಾಡಿ';
 
   @override
-  String get customRateLabel => 'ಕಸ್ಟಮ್ ದರ';
+  String get casingHeading => 'ಕೇಸಿಂಗ್';
+
+  @override
+  String get casingFeetLabel => 'ಕೇಸಿಂಗ್ ಅಡಿ';
+
+  @override
+  String get casingRateLabel => 'ಕೇಸಿಂಗ್ ದರ (GI)';
+
+  @override
+  String get selectCasingRateHint => 'ಕೇಸಿಂಗ್ ದರ ಆಯ್ಕೆಮಾಡಿ';
 
   @override
   String get calculateBill => 'ಬಿಲ್ ಲೆಕ್ಕಹಾಕಿ';
@@ -102,18 +119,32 @@ class AppLocalizationsKn extends AppLocalizations {
   String get totalAmount => 'ಒಟ್ಟು ಮೊತ್ತ';
 
   @override
-  String get editDefaultRates => 'ಡೀಫಾಲ್ಟ್ ದರಗಳನ್ನು ಸಂಪಾದಿಸಿ';
+  String get fixedChargeDetail => 'ಸ್ಥಿರ ಶುಲ್ಕ';
 
   @override
-  String get defaultRatesHint =>
-      'ಈ ದರಗಳನ್ನು ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯುವ ಪ್ರತಿ ಬಾರಿ ಬಳಸಲಾಗುತ್ತದೆ.';
+  String get editFixedCharges => 'ಸ್ಥಿರ ಶುಲ್ಕಗಳನ್ನು ಸಂಪಾದಿಸಿ';
 
   @override
-  String get invalidRateForEverySlab =>
-      'ದಯವಿಟ್ಟು ಪ್ರತಿ ಹಂತಕ್ಕೂ ಸರಿಯಾದ ದರವನ್ನು ನಮೂದಿಸಿ.';
+  String get fixedChargesHint => 'ಈ ಶುಲ್ಕಗಳನ್ನು ಪ್ರತಿ ಬಿಲ್‌ಗೆ ಸೇರಿಸಲಾಗುತ್ತದೆ.';
 
   @override
-  String get defaultRatesSaved => 'ಡೀಫಾಲ್ಟ್ ದರಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ';
+  String get collarLabel => 'ಕಾಲರ್';
+
+  @override
+  String get weldingLabel => 'ವೆಲ್ಡಿಂಗ್';
+
+  @override
+  String get cuttingLabel => 'ಕಟಿಂಗ್';
+
+  @override
+  String get capLabel => 'ಕ್ಯಾಪ್';
+
+  @override
+  String get invalidFixedCharges =>
+      'ದಯವಿಟ್ಟು ಪ್ರತಿ ಶುಲ್ಕಕ್ಕೂ ಸರಿಯಾದ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ.';
+
+  @override
+  String get fixedChargesSaved => 'ಸ್ಥಿರ ಶುಲ್ಕಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ';
 
   @override
   String get save => 'ಉಳಿಸಿ';
@@ -135,17 +166,41 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get pdfDepthRange => 'ಆಳದ ವ್ಯಾಪ್ತಿ';
+  String pdfBaseRate(String rate) {
+    return 'ಮೂಲ ದರ: $rate/ಅಡಿ';
+  }
 
   @override
-  String get pdfFeet => 'ಅಡಿ';
+  String get pdfDescription => 'ವಿವರಣೆ';
 
   @override
-  String get pdfRatePerFt => 'ದರ/ಅಡಿ';
+  String get pdfDetail => 'ವಿವರ';
 
   @override
   String get pdfAmount => 'ಮೊತ್ತ';
 
   @override
   String get pdfTotalAmount => 'ಒಟ್ಟು ಮೊತ್ತ';
+
+  @override
+  String get historyTooltip => 'ಬಿಲ್ ಇತಿಹಾಸ';
+
+  @override
+  String get historyTitle => 'ಬಿಲ್ ಇತಿಹಾಸ';
+
+  @override
+  String get historyEmpty => 'ಇನ್ನೂ ಯಾವುದೇ ಬಿಲ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ';
+
+  @override
+  String get historyEmptySubtitle =>
+      'ನೀವು PDF ಹಂಚಿಕೊಂಡಾಗ ಅಥವಾ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದಾಗ ರಚಿಸಿದ ಬಿಲ್‌ಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.';
+
+  @override
+  String get historyDeleteTooltip => 'ಅಳಿಸಿ';
+
+  @override
+  String get historyDeleted => 'ಬಿಲ್ ಅಳಿಸಲಾಗಿದೆ';
+
+  @override
+  String get walkInClient => 'ಸಾಮಾನ್ಯ ಗ್ರಾಹಕ';
 }

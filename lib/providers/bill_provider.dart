@@ -5,147 +5,178 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/bill_result.dart';
-import '../models/rate_slab.dart';
+import '../models/drilling_rate_band.dart';
+import '../models/fixed_charges.dart';
 import '../utils/currency_formatter.dart';
 
 /// Reasons [BillProvider.calculate] can fail. The UI maps each to a
 /// localized message, since this provider has no [BuildContext] of its own.
-enum DepthError { empty, invalid, missingCustomRate }
+enum DepthError { empty, invalid, casingEmpty, invalidCasing, missingCasingRate }
 
-/// Central state holder for the calculator: current slab rates, the
-/// persisted default rates, and the last calculated bill.
+const double defaultBaseRate = 100;
+
+/// Central state holder for the calculator: the selected base drilling
+/// rate, optional casing feet/rate, the persisted fixed charges
+/// (COLLAR/WELDING/CUTTING/CAP), and the last calculated bill.
 class BillProvider extends ChangeNotifier {
-  static const _prefsKey = 'default_rate_slabs_v1';
+  static const _prefsKey = 'fixed_charges_v1';
 
-  List<RateSlab> _slabs = defaultRateSlabs();
-  List<RateSlab> _savedDefaults = defaultRateSlabs();
+  double baseRate = defaultBaseRate;
+  double? casingRate;
+
+  FixedCharges fixedCharges = FixedCharges.defaults();
+  FixedCharges _savedFixedCharges = FixedCharges.defaults();
   bool _isLoaded = false;
 
-  /// Bumped whenever slab rates are replaced wholesale (load/save/reset) so
-  /// the UI can key its rate-input widgets fresh instead of trying to sync
-  /// stale local text-field state.
+  /// Bumped whenever session state is reset wholesale so the UI can key its
+  /// input widgets fresh instead of trying to sync stale local text state.
   int version = 0;
 
   DepthError? depthError;
   BillResult? result;
 
-  List<RateSlab> get slabs => List.unmodifiable(_slabs);
-  List<RateSlab> get savedDefaults => List.unmodifiable(_savedDefaults);
+  FixedCharges get savedFixedCharges => _savedFixedCharges;
   bool get isLoaded => _isLoaded;
 
-  /// Loads previously saved default rates (if any) from SharedPreferences.
+  /// Loads previously saved fixed charges (if any) from SharedPreferences.
   Future<void> loadDefaults() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonStr = prefs.getString(_prefsKey);
     if (jsonStr != null) {
       try {
-        final decoded = jsonDecode(jsonStr) as List<dynamic>;
-        final loaded = decoded
-            .map((e) => RateSlab.fromJson(e as Map<String, dynamic>))
-            .toList();
-        if (loaded.length == defaultRateSlabs().length) {
-          _savedDefaults = loaded;
-        }
+        final decoded = jsonDecode(jsonStr) as Map<String, dynamic>;
+        _savedFixedCharges = FixedCharges.fromJson(decoded);
       } catch (_) {
         // Corrupt or unexpected data: keep the factory defaults.
       }
     }
-    _slabs = _savedDefaults.map((s) => s.copyWith()).toList();
+    fixedCharges = _savedFixedCharges;
     _isLoaded = true;
     version++;
     notifyListeners();
   }
 
-  /// Persists [newDefaults] as the default rates for future app launches
-  /// and applies them to the current session immediately.
-  Future<void> saveDefaults(List<RateSlab> newDefaults) async {
-    _savedDefaults = newDefaults.map((s) => s.copyWith()).toList();
-    _slabs = newDefaults.map((s) => s.copyWith()).toList();
+  /// Persists [newCharges] as the fixed charges for future bills and
+  /// applies them to the current session immediately.
+  Future<void> saveFixedCharges(FixedCharges newCharges) async {
+    _savedFixedCharges = newCharges;
+    fixedCharges = newCharges;
     final prefs = await SharedPreferences.getInstance();
-    final jsonStr =
-        jsonEncode(_savedDefaults.map((s) => s.toJson()).toList());
-    await prefs.setString(_prefsKey, jsonStr);
+    await prefs.setString(_prefsKey, jsonEncode(_savedFixedCharges.toJson()));
     version++;
     notifyListeners();
   }
 
-  void selectPresetRate(int index, double rate) {
-    _slabs[index] = _slabs[index].copyWith(rate: rate);
+  void selectBaseRate(double rate) {
+    baseRate = rate;
     notifyListeners();
   }
 
-  /// Switches a slab into "Custom" mode. A rate of 0 marks the field as
-  /// empty until the user types a value.
-  void switchToCustomRate(int index) {
-    _slabs[index] = _slabs[index].copyWith(rate: 0);
+  void selectCasingRate(double rate) {
+    casingRate = rate;
     notifyListeners();
   }
 
-  /// Updates a slab's custom rate as the user types. A value of 0 marks
-  /// the field as effectively empty for validation purposes.
-  void updateCustomRate(int index, double rate) {
-    _slabs[index] = _slabs[index].copyWith(rate: rate);
-    notifyListeners();
-  }
-
-  /// Validates the given depth text and current slab rates, then computes
+  /// Validates the given depth/casing text and current rates, then computes
   /// the bill breakdown. Errors are exposed via [depthError].
-  void calculate(String depthInput) {
+  void calculate(String depthInput, String casingFeetInput) {
     depthError = null;
     result = null;
 
-    final trimmed = depthInput.trim();
-    if (trimmed.isEmpty) {
+    final trimmedDepth = depthInput.trim();
+    if (trimmedDepth.isEmpty) {
       depthError = DepthError.empty;
       notifyListeners();
       return;
     }
 
-    final depth = int.tryParse(trimmed);
+    final depth = int.tryParse(trimmedDepth);
     if (depth == null || depth <= 0) {
       depthError = DepthError.invalid;
       notifyListeners();
       return;
     }
 
-    for (final slab in _slabs) {
-      if (slab.isCustom && slab.rate <= 0) {
-        depthError = DepthError.missingCustomRate;
-        notifyListeners();
-        return;
-      }
+    final trimmedCasing = casingFeetInput.trim();
+    if (trimmedCasing.isEmpty) {
+      depthError = DepthError.casingEmpty;
+      notifyListeners();
+      return;
     }
 
-    final items = <BillBreakdownItem>[];
-    double total = 0;
-    for (final slab in _slabs) {
-      final upper = slab.maxDepth == null
+    final casingFeet = int.tryParse(trimmedCasing);
+    if (casingFeet == null || casingFeet <= 0) {
+      depthError = DepthError.invalidCasing;
+      notifyListeners();
+      return;
+    }
+
+    if (casingRate == null) {
+      depthError = DepthError.missingCasingRate;
+      notifyListeners();
+      return;
+    }
+
+    final drillingItems = <BillBreakdownItem>[];
+    for (final band in depthRateBands) {
+      final upper = band.maxDepth == null
           ? depth
-          : (depth < slab.maxDepth! ? depth : slab.maxDepth!);
-      final units = upper - slab.minDepth;
+          : (depth < band.maxDepth! ? depth : band.maxDepth!);
+      final units = upper - band.minDepth;
       if (units <= 0) continue;
 
-      final amount = units * slab.rate;
-      total += amount;
-      final rangeStart = slab.minDepth == 0 ? 0 : slab.minDepth + 1;
-      items.add(BillBreakdownItem(
-        rangeLabel: '$rangeStart - $upper ft',
-        units: units,
-        rate: slab.rate,
+      final rate = baseRate + band.addOn;
+      final amount = units * rate;
+      final rangeStart = band.minDepth == 0 ? 0 : band.minDepth + 1;
+      final rangeLabel = band.maxDepth == null
+          ? '$rangeStart ft and above'
+          : '$rangeStart - $upper ft';
+      drillingItems.add(BillBreakdownItem(
+        label: rangeLabel,
+        quantity: units,
+        rate: rate,
         amount: amount,
       ));
     }
 
-    result = BillResult(totalDepth: depth, items: items, totalAmount: total);
+    final otherItems = <BillBreakdownItem>[
+      BillBreakdownItem(
+        label: 'Casing (GI)',
+        quantity: casingFeet,
+        rate: casingRate!,
+        amount: casingFeet * casingRate!,
+      ),
+    ];
+    otherItems.addAll([
+      BillBreakdownItem(label: 'COLLAR', amount: fixedCharges.collar),
+      BillBreakdownItem(label: 'WELDING', amount: fixedCharges.welding),
+      BillBreakdownItem(label: 'CUTTING', amount: fixedCharges.cutting),
+      BillBreakdownItem(label: 'CAP', amount: fixedCharges.cap),
+    ]);
+
+    final total = [...drillingItems, ...otherItems]
+        .fold<double>(0, (sum, item) => sum + item.amount);
+
+    result = BillResult(
+      totalDepth: depth,
+      baseRate: baseRate,
+      casingFeet: casingFeet,
+      casingRate: casingRate,
+      drillingItems: drillingItems,
+      otherItems: otherItems,
+      totalAmount: total,
+    );
     notifyListeners();
   }
 
-  /// Clears the current depth, result, and error, and reverts working
-  /// rates back to the saved defaults.
+  /// Clears the current inputs, result, and error, and reverts working
+  /// rates back to their defaults.
   void reset() {
     depthError = null;
     result = null;
-    _slabs = _savedDefaults.map((s) => s.copyWith()).toList();
+    baseRate = defaultBaseRate;
+    casingRate = null;
+    fixedCharges = _savedFixedCharges;
     version++;
     notifyListeners();
   }
@@ -160,11 +191,13 @@ class BillProvider extends ChangeNotifier {
       ..writeln(l10n.pdfTotalDepth(r.totalDepth))
       ..writeln();
 
-    for (final item in r.items) {
+    for (final item in [...r.drillingItems, ...r.otherItems]) {
+      final detail = item.quantity != null && item.rate != null
+          ? '${item.quantity} ft × ${CurrencyFormatter.format(item.rate!)}'
+          : CurrencyFormatter.format(item.amount);
       buffer
-        ..writeln(item.rangeLabel)
-        ..writeln(
-            '${item.units} x ${CurrencyFormatter.format(item.rate)} = ${CurrencyFormatter.format(item.amount)}')
+        ..writeln(item.label)
+        ..writeln('$detail = ${CurrencyFormatter.format(item.amount)}')
         ..writeln('-------------------');
     }
 

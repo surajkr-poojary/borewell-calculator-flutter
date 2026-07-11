@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// Each anonymous device identity can only read/write its own report
+// history, stored under users/{uid}/reports/{reportId}. Paste this into
+// Firebase Console → Firestore Database → Rules (or deploy with the
+// Firebase CLI: `firebase deploy --only firestore:rules`).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/reports/{reportId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

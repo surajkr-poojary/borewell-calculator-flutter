@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
+
 /// A large, easy-to-tap button used for the primary actions on screen
 /// (Calculate, Reset, Share, Download). Thin wrapper around the standard
 /// Material buttons so press feedback, ripple, and disabled styling all
-/// come from the app theme rather than being reimplemented here.
+/// come from the app theme rather than being reimplemented here. The press
+/// ripple is tinted with the app's water accent for a droplet-like feel.
 class LargeButton extends StatelessWidget {
   final String label;
   final IconData? icon;
@@ -31,6 +34,16 @@ class LargeButton extends StatelessWidget {
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
+      splashFactory: InkRipple.splashFactory,
+      overlayColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.pressed)) {
+          return AppColors.water.withValues(alpha: 0.35);
+        }
+        if (states.contains(WidgetState.hovered)) {
+          return AppColors.water.withValues(alpha: 0.12);
+        }
+        return null;
+      }),
     );
 
     final child = isLoading

@@ -60,6 +60,13 @@ dependencies:
   # Opening the saved PDF from the "Download" action
   open_filex: ^4.5.0
 
+  # Cloud record-keeping: anonymous per-device auth + Firestore history
+  # of generated bills (PDF bytes stored inline, no Firebase Storage/Blaze
+  # plan required)
+  firebase_core: ^4.11.0
+  firebase_auth: ^6.5.4
+  cloud_firestore: ^6.6.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

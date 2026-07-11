@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../constants/company_info.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/bill_result.dart';
 
@@ -22,7 +23,9 @@ class PdfService {
 
   static Future<pw.Font> _loadKannadaFont() async {
     if (_kannadaFontCache != null) return _kannadaFontCache!;
-    final data = await rootBundle.load('assets/fonts/NotoSansKannada-Regular.ttf');
+    final data = await rootBundle.load(
+      'assets/fonts/NotoSansKannada-Regular.ttf',
+    );
     _kannadaFontCache = pw.Font.ttf(data);
     return _kannadaFontCache!;
   }
@@ -40,8 +43,9 @@ class PdfService {
     final doc = pw.Document(
       theme: pw.ThemeData.withFont(fontFallback: [kannadaFont]),
     );
-    final generatedOn =
-        DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.now());
+    final generatedOn = DateFormat(
+      'dd MMM yyyy, hh:mm a',
+    ).format(DateTime.now());
     final hasClient = clientName != null && clientName.trim().isNotEmpty;
 
     doc.addPage(
@@ -52,15 +56,35 @@ class PdfService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(
-                l10n.pdfTitle,
-                style:
-                    pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+              pw.Center(
+                child: pw.Text(
+                  kCompanyName,
+                  textAlign: pw.TextAlign.center,
+                  style: pw.TextStyle(
+                    fontSize: 20,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
               ),
-              pw.SizedBox(height: 4),
+              pw.SizedBox(height: 2),
+              pw.Center(
+                child: pw.Text(
+                  l10n.pdfTitle,
+                  style: const pw.TextStyle(
+                    fontSize: 12,
+                    color: PdfColors.grey700,
+                  ),
+                ),
+              ),
+              pw.SizedBox(height: 8),
+              pw.Divider(color: PdfColors.grey400, thickness: 1),
+              pw.SizedBox(height: 8),
               pw.Text(
                 l10n.pdfGeneratedOn(generatedOn),
-                style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
+                style: const pw.TextStyle(
+                  fontSize: 10,
+                  color: PdfColors.grey700,
+                ),
               ),
               pw.SizedBox(height: 20),
               if (hasClient) ...[
@@ -75,45 +99,82 @@ class PdfService {
                 pw.SizedBox(height: 4),
                 pw.Text(
                   clientName.trim(),
-                  style:
-                      pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
                 ),
                 if (clientPhone != null && clientPhone.trim().isNotEmpty)
-                  pw.Text(clientPhone.trim(), style: const pw.TextStyle(fontSize: 11)),
+                  pw.Text(
+                    clientPhone.trim(),
+                    style: const pw.TextStyle(fontSize: 11),
+                  ),
                 if (clientAddress != null && clientAddress.trim().isNotEmpty)
-                  pw.Text(clientAddress.trim(), style: const pw.TextStyle(fontSize: 11)),
+                  pw.Text(
+                    clientAddress.trim(),
+                    style: const pw.TextStyle(fontSize: 11),
+                  ),
                 pw.SizedBox(height: 20),
               ],
               pw.Text(
                 l10n.pdfTotalDepth(result.totalDepth),
-                style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(
+                  fontSize: 13,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
+              pw.SizedBox(height: 2),
+              pw.Text(
+                l10n.pdfBaseRate(_money(result.baseRate)),
+                style: const pw.TextStyle(
+                  fontSize: 11,
+                  color: PdfColors.grey700,
+                ),
+              ),
+              if (result.casingFeet > 0 && result.casingRate != null) ...[
+                pw.SizedBox(height: 2),
+                pw.Text(
+                  '${l10n.casingHeading}: ${result.casingFeet} ft @ ${_money(result.casingRate!)}/ft',
+                  style: const pw.TextStyle(
+                    fontSize: 11,
+                    color: PdfColors.grey700,
+                  ),
+                ),
+              ],
               pw.SizedBox(height: 16),
               pw.Table(
-                border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
+                border: pw.TableBorder.all(
+                  color: PdfColors.grey400,
+                  width: 0.5,
+                ),
                 columnWidths: const {
-                  0: pw.FlexColumnWidth(2.2),
-                  1: pw.FlexColumnWidth(1),
-                  2: pw.FlexColumnWidth(1.3),
-                  3: pw.FlexColumnWidth(1.5),
+                  0: pw.FlexColumnWidth(2),
+                  1: pw.FlexColumnWidth(1.8),
+                  2: pw.FlexColumnWidth(1.5),
                 },
                 children: [
                   pw.TableRow(
-                    decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                    decoration: const pw.BoxDecoration(
+                      color: PdfColors.grey200,
+                    ),
                     children: [
-                      _cell(l10n.pdfDepthRange, bold: true),
-                      _cell(l10n.pdfFeet, bold: true),
-                      _cell(l10n.pdfRatePerFt, bold: true),
+                      _cell(l10n.pdfDescription, bold: true),
+                      _cell(l10n.pdfDetail, bold: true),
                       _cell(l10n.pdfAmount, bold: true),
                     ],
                   ),
                   for (final item in result.items)
-                    pw.TableRow(children: [
-                      _cell(item.rangeLabel),
-                      _cell('${item.units}'),
-                      _cell(_money(item.rate)),
-                      _cell(_money(item.amount)),
-                    ]),
+                    pw.TableRow(
+                      children: [
+                        _cell(item.label),
+                        _cell(
+                          item.quantity != null && item.rate != null
+                              ? '${item.quantity} ft x ${_money(item.rate!)}'
+                              : l10n.fixedChargeDetail,
+                        ),
+                        _cell(_money(item.amount)),
+                      ],
+                    ),
                 ],
               ),
               pw.SizedBox(height: 20),
@@ -125,12 +186,18 @@ class PdfService {
                   children: [
                     pw.Text(
                       l10n.pdfTotalAmount,
-                      style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
+                      style: const pw.TextStyle(
+                        fontSize: 12,
+                        color: PdfColors.grey700,
+                      ),
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text(
                       _money(result.totalAmount),
-                      style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+                      style: pw.TextStyle(
+                        fontSize: 20,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -158,7 +225,9 @@ class PdfService {
   }
 
   static String _money(num amount) {
-    final formatted = NumberFormat.decimalPattern('en_IN').format(amount.round());
+    final formatted = NumberFormat.decimalPattern(
+      'en_IN',
+    ).format(amount.round());
     return 'Rs. $formatted';
   }
 }

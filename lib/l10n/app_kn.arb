@@ -2,7 +2,7 @@
   "@@locale": "kn",
 
   "appTitle": "ಬೋರ್‌ವೆಲ್ ಬಿಲ್ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
-  "appTagline": "ವೇಗದ, ನಿಖರ ಹಂತ-ಆಧಾರಿತ ಬಿಲ್ಲಿಂಗ್",
+  "appTagline": "ವೇಗದ, ನಿಖರ ಬೋರ್‌ವೆಲ್ ಬಿಲ್ಲಿಂಗ್",
   "languageTooltip": "ಭಾಷೆ ಬದಲಾಯಿಸಿ",
 
   "totalDepthLabel": "ಒಟ್ಟು ಆಳ",
@@ -10,7 +10,9 @@
 
   "depthErrorEmpty": "ದಯವಿಟ್ಟು ಬೋರ್‌ವೆಲ್ ಆಳವನ್ನು ನಮೂದಿಸಿ.",
   "depthErrorInvalid": "ದಯವಿಟ್ಟು ಸರಿಯಾದ ಬೋರ್‌ವೆಲ್ ಆಳವನ್ನು ನಮೂದಿಸಿ.",
-  "depthErrorCustomRate": "ದಯವಿಟ್ಟು ನಿಗದಿತ ದರವನ್ನು ನಮೂದಿಸಿ.",
+  "depthErrorCasingEmpty": "ದಯವಿಟ್ಟು ಕೇಸಿಂಗ್ ಅಡಿಗಳನ್ನು ನಮೂದಿಸಿ.",
+  "depthErrorInvalidCasing": "ದಯವಿಟ್ಟು ಸರಿಯಾದ ಕೇಸಿಂಗ್ ಆಳವನ್ನು ನಮೂದಿಸಿ.",
+  "depthErrorMissingCasingRate": "ದಯವಿಟ್ಟು ಕೇಸಿಂಗ್ ದರವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
 
   "billForClientTitle": "ಗ್ರಾಹಕರಿಗಾಗಿ ಬಿಲ್ ರಚಿಸಿ",
   "billForClientSubtitle": "ಹಂಚಿಕೊಂಡ ಅಥವಾ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ PDF ಗೆ ಅವರ ಹೆಸರು/ಸಂಪರ್ಕವನ್ನು ಸೇರಿಸುತ್ತದೆ",
@@ -19,10 +21,14 @@
   "clientPhoneLabel": "ಫೋನ್ (ಐಚ್ಛಿಕ)",
   "clientAddressLabel": "ವಿಳಾಸ (ಐಚ್ಛಿಕ)",
 
-  "rateSlabsHeading": "ದರ ಹಂತಗಳು",
-  "rateLabel": "ದರ",
-  "customOption": "ಕಸ್ಟಮ್",
-  "customRateLabel": "ಕಸ್ಟಮ್ ದರ",
+  "drillingHeading": "ಕೊರೆಯುವ ದರ",
+  "baseRateLabel": "ಮೂಲ ದರ",
+  "selectRateHint": "ದರ ಆಯ್ಕೆಮಾಡಿ",
+
+  "casingHeading": "ಕೇಸಿಂಗ್",
+  "casingFeetLabel": "ಕೇಸಿಂಗ್ ಅಡಿ",
+  "casingRateLabel": "ಕೇಸಿಂಗ್ ದರ (GI)",
+  "selectCasingRateHint": "ಕೇಸಿಂಗ್ ದರ ಆಯ್ಕೆಮಾಡಿ",
 
   "calculateBill": "ಬಿಲ್ ಲೆಕ್ಕಹಾಕಿ",
   "reset": "ಮರುಹೊಂದಿಸಿ",
@@ -38,20 +44,33 @@
 
   "billBreakdown": "ಬಿಲ್ ವಿವರ",
   "totalAmount": "ಒಟ್ಟು ಮೊತ್ತ",
+  "fixedChargeDetail": "ಸ್ಥಿರ ಶುಲ್ಕ",
 
-  "editDefaultRates": "ಡೀಫಾಲ್ಟ್ ದರಗಳನ್ನು ಸಂಪಾದಿಸಿ",
-  "defaultRatesHint": "ಈ ದರಗಳನ್ನು ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯುವ ಪ್ರತಿ ಬಾರಿ ಬಳಸಲಾಗುತ್ತದೆ.",
-  "invalidRateForEverySlab": "ದಯವಿಟ್ಟು ಪ್ರತಿ ಹಂತಕ್ಕೂ ಸರಿಯಾದ ದರವನ್ನು ನಮೂದಿಸಿ.",
-  "defaultRatesSaved": "ಡೀಫಾಲ್ಟ್ ದರಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ",
+  "editFixedCharges": "ಸ್ಥಿರ ಶುಲ್ಕಗಳನ್ನು ಸಂಪಾದಿಸಿ",
+  "fixedChargesHint": "ಈ ಶುಲ್ಕಗಳನ್ನು ಪ್ರತಿ ಬಿಲ್‌ಗೆ ಸೇರಿಸಲಾಗುತ್ತದೆ.",
+  "collarLabel": "ಕಾಲರ್",
+  "weldingLabel": "ವೆಲ್ಡಿಂಗ್",
+  "cuttingLabel": "ಕಟಿಂಗ್",
+  "capLabel": "ಕ್ಯಾಪ್",
+  "invalidFixedCharges": "ದಯವಿಟ್ಟು ಪ್ರತಿ ಶುಲ್ಕಕ್ಕೂ ಸರಿಯಾದ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ.",
+  "fixedChargesSaved": "ಸ್ಥಿರ ಶುಲ್ಕಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ",
   "save": "ಉಳಿಸಿ",
 
   "pdfTitle": "ಬೋರ್‌ವೆಲ್ ಬಿಲ್",
   "pdfGeneratedOn": "{date} ರಂದು ರಚಿಸಲಾಗಿದೆ",
   "pdfBillTo": "ಬಿಲ್ ಸ್ವೀಕರಿಸುವವರು",
   "pdfTotalDepth": "ಒಟ್ಟು ಆಳ: {depth} ಅಡಿ",
-  "pdfDepthRange": "ಆಳದ ವ್ಯಾಪ್ತಿ",
-  "pdfFeet": "ಅಡಿ",
-  "pdfRatePerFt": "ದರ/ಅಡಿ",
+  "pdfBaseRate": "ಮೂಲ ದರ: {rate}/ಅಡಿ",
+  "pdfDescription": "ವಿವರಣೆ",
+  "pdfDetail": "ವಿವರ",
   "pdfAmount": "ಮೊತ್ತ",
-  "pdfTotalAmount": "ಒಟ್ಟು ಮೊತ್ತ"
+  "pdfTotalAmount": "ಒಟ್ಟು ಮೊತ್ತ",
+
+  "historyTooltip": "ಬಿಲ್ ಇತಿಹಾಸ",
+  "historyTitle": "ಬಿಲ್ ಇತಿಹಾಸ",
+  "historyEmpty": "ಇನ್ನೂ ಯಾವುದೇ ಬಿಲ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ",
+  "historyEmptySubtitle": "ನೀವು PDF ಹಂಚಿಕೊಂಡಾಗ ಅಥವಾ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದಾಗ ರಚಿಸಿದ ಬಿಲ್‌ಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.",
+  "historyDeleteTooltip": "ಅಳಿಸಿ",
+  "historyDeleted": "ಬಿಲ್ ಅಳಿಸಲಾಗಿದೆ",
+  "walkInClient": "ಸಾಮಾನ್ಯ ಗ್ರಾಹಕ"
 }

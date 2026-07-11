@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Borewell Bill Calculator';
 
   @override
-  String get appTagline => 'Fast, accurate slab-wise billing';
+  String get appTagline => 'Fast, accurate borewell billing';
 
   @override
   String get languageTooltip => 'Change language';
@@ -30,7 +30,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get depthErrorInvalid => 'Please enter a valid borewell depth.';
 
   @override
-  String get depthErrorCustomRate => 'Please enter custom rate.';
+  String get depthErrorCasingEmpty => 'Please enter casing feet.';
+
+  @override
+  String get depthErrorInvalidCasing => 'Please enter a valid casing depth.';
+
+  @override
+  String get depthErrorMissingCasingRate => 'Please select a casing rate.';
 
   @override
   String get billForClientTitle => 'Generate bill for a client';
@@ -52,16 +58,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clientAddressLabel => 'Address (optional)';
 
   @override
-  String get rateSlabsHeading => 'Rate Slabs';
+  String get drillingHeading => 'Drilling Rate';
 
   @override
-  String get rateLabel => 'Rate';
+  String get baseRateLabel => 'Base Rate';
 
   @override
-  String get customOption => 'Custom';
+  String get selectRateHint => 'Select rate';
 
   @override
-  String get customRateLabel => 'Custom Rate';
+  String get casingHeading => 'Casing';
+
+  @override
+  String get casingFeetLabel => 'Casing Feet';
+
+  @override
+  String get casingRateLabel => 'Casing Rate (GI)';
+
+  @override
+  String get selectCasingRateHint => 'Select casing rate';
 
   @override
   String get calculateBill => 'Calculate Bill';
@@ -100,18 +115,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalAmount => 'Total Amount';
 
   @override
-  String get editDefaultRates => 'Edit Default Rates';
+  String get fixedChargeDetail => 'Fixed charge';
 
   @override
-  String get defaultRatesHint =>
-      'These rates are used every time the app opens.';
+  String get editFixedCharges => 'Edit Fixed Charges';
 
   @override
-  String get invalidRateForEverySlab =>
-      'Please enter a valid rate for every slab.';
+  String get fixedChargesHint => 'These charges are added to every bill.';
 
   @override
-  String get defaultRatesSaved => 'Default rates saved';
+  String get collarLabel => 'Collar';
+
+  @override
+  String get weldingLabel => 'Welding';
+
+  @override
+  String get cuttingLabel => 'Cutting';
+
+  @override
+  String get capLabel => 'Cap';
+
+  @override
+  String get invalidFixedCharges =>
+      'Please enter a valid amount for every charge.';
+
+  @override
+  String get fixedChargesSaved => 'Fixed charges saved';
 
   @override
   String get save => 'Save';
@@ -133,17 +162,41 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get pdfDepthRange => 'Depth Range';
+  String pdfBaseRate(String rate) {
+    return 'Base Rate: $rate/ft';
+  }
 
   @override
-  String get pdfFeet => 'Feet';
+  String get pdfDescription => 'Description';
 
   @override
-  String get pdfRatePerFt => 'Rate/ft';
+  String get pdfDetail => 'Detail';
 
   @override
   String get pdfAmount => 'Amount';
 
   @override
   String get pdfTotalAmount => 'Total Amount';
+
+  @override
+  String get historyTooltip => 'Report history';
+
+  @override
+  String get historyTitle => 'Report History';
+
+  @override
+  String get historyEmpty => 'No saved reports yet';
+
+  @override
+  String get historyEmptySubtitle =>
+      'Generated bills will appear here once you share or download a PDF.';
+
+  @override
+  String get historyDeleteTooltip => 'Delete';
+
+  @override
+  String get historyDeleted => 'Report deleted';
+
+  @override
+  String get walkInClient => 'Walk-in customer';
 }
