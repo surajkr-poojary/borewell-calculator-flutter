@@ -106,5 +106,33 @@
   "historyEmptySubtitle": "Generated bills will appear here once you share or download a PDF.",
   "historyDeleteTooltip": "Delete",
   "historyDeleted": "Report deleted",
-  "walkInClient": "Walk-in customer"
+  "walkInClient": "Walk-in customer",
+
+  "signOutTooltip": "Sign out",
+  "signedInAs": "Signed in as {phone}",
+  "@signedInAs": {
+    "placeholders": {
+      "phone": { "type": "String" }
+    }
+  },
+
+  "phoneSignInTitle": "Sign in to sync bills",
+  "phoneSignInSubtitle": "Sign in with your phone number to save bills and see the same history on every device.",
+  "phoneNumberLabel": "Phone number",
+  "phoneNumberHint": "9876543210",
+  "phoneNumberError": "Please enter a valid 10-digit phone number.",
+  "sendOtp": "Send OTP",
+  "otpLabel": "Enter OTP",
+  "otpSubtitle": "We sent a 6-digit code to {phone}",
+  "@otpSubtitle": {
+    "placeholders": {
+      "phone": { "type": "String" }
+    }
+  },
+  "otpError": "Please enter the 6-digit code.",
+  "verifyOtp": "Verify",
+  "resendOtp": "Resend OTP",
+  "changeNumber": "Change number",
+  "otpSendFailed": "Could not send the OTP. Please try again.",
+  "otpVerifyFailed": "That code didn't work. Please check and try again."
 }

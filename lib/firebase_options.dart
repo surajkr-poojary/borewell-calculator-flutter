@@ -4,24 +4,44 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-/// PLACEHOLDER — this file has not been generated yet.
+/// Default [FirebaseOptions] for use with your Firebase apps.
 ///
-/// Run `flutterfire configure` in the project root with your own Firebase
-/// project selected; it will overwrite this entire file with real,
-/// project-specific values for each platform you target. Until then, these
-/// dummy values mean Firebase calls will fail (handled gracefully by
-/// [ReportHistoryService], which degrades to "no history" rather than
-/// crashing the app).
+/// Example:
+/// ```dart
+/// import 'firebase_options.dart';
+/// // ...
+/// await Firebase.initializeApp(
+///   options: DefaultFirebaseOptions.currentPlatform,
+/// );
+/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
         return ios;
+      case TargetPlatform.macOS:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      case TargetPlatform.windows:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      case TargetPlatform.linux:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for linux - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -29,28 +49,20 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const web = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: 'REPLACE_ME',
-    messagingSenderId: 'REPLACE_ME',
-    projectId: 'REPLACE_ME',
-    storageBucket: 'REPLACE_ME',
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyDAVyp0yCiiNxXtwHAZoi5k4d9lHoncw7Y',
+    appId: '1:585261067843:android:e285386443e96db066eef6',
+    messagingSenderId: '585261067843',
+    projectId: 'borewell-calculator',
+    storageBucket: 'borewell-calculator.firebasestorage.app',
   );
 
-  static const android = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: 'REPLACE_ME',
-    messagingSenderId: 'REPLACE_ME',
-    projectId: 'REPLACE_ME',
-    storageBucket: 'REPLACE_ME',
-  );
-
-  static const ios = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: 'REPLACE_ME',
-    messagingSenderId: 'REPLACE_ME',
-    projectId: 'REPLACE_ME',
-    storageBucket: 'REPLACE_ME',
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDZj4_cnyNX0wA5d68KmcYNLkGV-NRIKTU',
+    appId: '1:585261067843:ios:fd0334d9695cc50266eef6',
+    messagingSenderId: '585261067843',
+    projectId: 'borewell-calculator',
+    storageBucket: 'borewell-calculator.firebasestorage.app',
     iosBundleId: 'com.pharmeasy.borewell.borewellBillCalculator',
   );
 }

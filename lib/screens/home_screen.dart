@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _cuttingQty = 0;
   int _capQty = 0;
   final _resultKey = GlobalKey();
+  final _shareButtonKey = GlobalKey();
 
   bool _billForClient = false;
   final _clientNameController = TextEditingController();
@@ -75,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
       case DepthError.invalid:
         return l10n.depthErrorInvalid;
       case DepthError.invalidBaseRate:
-      case DepthError.casingEmpty:
       case DepthError.invalidCasing:
       case DepthError.missingCasingRate:
       case null:
@@ -85,8 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String? _casingErrorText(AppLocalizations l10n, DepthError? error) {
     switch (error) {
-      case DepthError.casingEmpty:
-        return l10n.depthErrorCasingEmpty;
       case DepthError.invalidCasing:
         return l10n.depthErrorInvalidCasing;
       case DepthError.missingCasingRate:
@@ -103,7 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
       case DepthError.missingCasingRate:
         return l10n.depthErrorMissingCasingRate;
       case DepthError.invalidBaseRate:
-      case DepthError.casingEmpty:
       case DepthError.invalidCasing:
       case DepthError.empty:
       case DepthError.invalid:
@@ -116,7 +113,6 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (error) {
       case DepthError.invalidBaseRate:
         return l10n.depthErrorInvalidBaseRate;
-      case DepthError.casingEmpty:
       case DepthError.invalidCasing:
       case DepthError.missingCasingRate:
       case DepthError.empty:
@@ -212,7 +208,9 @@ class _HomeScreenState extends State<HomeScreen> {
         totalDepth: result.totalDepth,
         totalAmount: result.totalAmount,
         clientName: _billForClient ? _clientNameController.text.trim() : null,
-        clientPhone: _billForClient ? _clientPhoneController.text.trim() : null,
+        clientPhone: _billForClient
+            ? _clientPhoneController.text.trim()
+            : null,
         clientAddress: _billForClient
             ? _clientAddressController.text.trim()
             : null,
@@ -236,8 +234,19 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final bytes = await _buildPdfIfValid(provider, l10n);
       if (bytes == null) return;
-      await sharePdfBytes(bytes, _pdfFileName(), l10n.pdfTitle);
-    } catch (_) {
+      final renderBox =
+          _shareButtonKey.currentContext?.findRenderObject() as RenderBox?;
+      final sharePositionOrigin = renderBox == null
+          ? null
+          : renderBox.localToGlobal(Offset.zero) & renderBox.size;
+      await sharePdfBytes(
+        bytes,
+        _pdfFileName(),
+        l10n.pdfTitle,
+        sharePositionOrigin: sharePositionOrigin,
+      );
+    } catch (e, st) {
+      debugPrint('Share PDF failed: $e\n$st');
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -268,7 +277,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       );
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('Download PDF failed: $e\n$st');
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -654,6 +664,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: LargeButton(
+                          key: _shareButtonKey,
                           label: l10n.share,
                           icon: Icons.share_outlined,
                           isPrimary: false,

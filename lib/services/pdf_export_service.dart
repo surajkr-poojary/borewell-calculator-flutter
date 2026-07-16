@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:open_filex/open_filex.dart';
@@ -7,7 +8,16 @@ import 'package:share_plus/share_plus.dart';
 
 /// Writes [bytes] to a temporary file and opens the native share sheet so
 /// the PDF can be sent via WhatsApp, email, etc.
-Future<void> sharePdfBytes(Uint8List bytes, String fileName, String subject) async {
+///
+/// [sharePositionOrigin] anchors the iPad popover to the button that
+/// triggered the share; share_plus throws a `PlatformException` on iOS
+/// without it.
+Future<void> sharePdfBytes(
+  Uint8List bytes,
+  String fileName,
+  String subject, {
+  Rect? sharePositionOrigin,
+}) async {
   final dir = await getTemporaryDirectory();
   final file = File('${dir.path}/$fileName');
   await file.writeAsBytes(bytes, flush: true);
@@ -15,6 +25,7 @@ Future<void> sharePdfBytes(Uint8List bytes, String fileName, String subject) asy
   await Share.shareXFiles(
     [XFile(file.path, mimeType: 'application/pdf', name: fileName)],
     subject: subject,
+    sharePositionOrigin: sharePositionOrigin,
   );
 }
 

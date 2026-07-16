@@ -1,9 +1,10 @@
 rules_version = '2';
 
-// Each anonymous device identity can only read/write its own report
-// history, stored under users/{uid}/reports/{reportId}. Paste this into
-// Firebase Console → Firestore Database → Rules (or deploy with the
-// Firebase CLI: `firebase deploy --only firestore:rules`).
+// Each phone-number identity can only read/write its own report history
+// (any device signed in with the same phone number shares the same uid,
+// so the same history), stored under users/{uid}/reports/{reportId}.
+// Paste this into Firebase Console → Firestore Database → Rules (or
+// deploy with the Firebase CLI: `firebase deploy --only firestore:rules`).
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId}/reports/{reportId} {

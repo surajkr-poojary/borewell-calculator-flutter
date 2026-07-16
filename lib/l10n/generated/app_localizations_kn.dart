@@ -258,4 +258,60 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get walkInClient => 'ಸಾಮಾನ್ಯ ಗ್ರಾಹಕ';
+
+  @override
+  String get signOutTooltip => 'ಸೈನ್ ಔಟ್';
+
+  @override
+  String signedInAs(String phone) {
+    return '$phone ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದ್ದೀರಿ';
+  }
+
+  @override
+  String get phoneSignInTitle => 'ಬಿಲ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸೈನ್ ಇನ್ ಮಾಡಿ';
+
+  @override
+  String get phoneSignInSubtitle =>
+      'ಬಿಲ್‌ಗಳನ್ನು ಉಳಿಸಲು ಮತ್ತು ಪ್ರತಿ ಸಾಧನದಲ್ಲಿ ಒಂದೇ ಇತಿಹಾಸವನ್ನು ನೋಡಲು ನಿಮ್ಮ ಫೋನ್ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.';
+
+  @override
+  String get phoneNumberLabel => 'ಫೋನ್ ಸಂಖ್ಯೆ';
+
+  @override
+  String get phoneNumberHint => '9876543210';
+
+  @override
+  String get phoneNumberError =>
+      'ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ 10-ಅಂಕಿಯ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.';
+
+  @override
+  String get sendOtp => 'OTP ಕಳುಹಿಸಿ';
+
+  @override
+  String get otpLabel => 'OTP ನಮೂದಿಸಿ';
+
+  @override
+  String otpSubtitle(String phone) {
+    return '$phone ಗೆ 6-ಅಂಕಿಯ ಕೋಡ್ ಕಳುಹಿಸಲಾಗಿದೆ';
+  }
+
+  @override
+  String get otpError => 'ದಯವಿಟ್ಟು 6-ಅಂಕಿಯ ಕೋಡ್ ನಮೂದಿಸಿ.';
+
+  @override
+  String get verifyOtp => 'ಪರಿಶೀಲಿಸಿ';
+
+  @override
+  String get resendOtp => 'OTP ಮರುಕಳುಹಿಸಿ';
+
+  @override
+  String get changeNumber => 'ಸಂಖ್ಯೆ ಬದಲಾಯಿಸಿ';
+
+  @override
+  String get otpSendFailed =>
+      'OTP ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+
+  @override
+  String get otpVerifyFailed =>
+      'ಆ ಕೋಡ್ ಕೆಲಸ ಮಾಡಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 }

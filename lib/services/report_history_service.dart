@@ -6,12 +6,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/report_record.dart';
 
-/// Saves and retrieves generated bills from Cloud Firestore, scoped to an
-/// anonymous per-device identity so each install only ever sees its own
-/// history (see `firestore.rules` in the repo root for the matching rule).
+/// Saves and retrieves generated bills from Cloud Firestore, scoped to
+/// whichever phone number is currently signed in — so every device signed
+/// in with the same number shares the same bill history (see
+/// `firestore.rules` in the repo root for the matching rule).
 ///
-/// All calls are best-effort: a contractor generating a bill in the field
-/// with no signal should never be blocked by a failed cloud write, so
+/// Sign-in is user-initiated via [sendOtp]/[verifyOtp] (see
+/// [PhoneSignInView]); until then, [saveReport] and [streamReports] are
+/// no-ops rather than failures. Once signed in, calls are still
+/// best-effort: a contractor generating a bill in the field with no
+/// signal should never be blocked by a failed cloud write, so
 /// [saveReport] swallows its own errors (Firestore still queues the write
 /// offline and syncs later automatically).
 class ReportHistoryService {
@@ -19,25 +23,58 @@ class ReportHistoryService {
 
   static final ReportHistoryService instance = ReportHistoryService._();
 
-  String? _uid;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
 
-  /// Signs in anonymously if needed. Safe to call repeatedly; a no-op once
-  /// signed in. Returns false (rather than throwing) if Firebase isn't
-  /// reachable/configured, so callers can degrade gracefully.
-  Future<bool> ensureSignedIn() async {
-    if (_uid != null) return true;
-    try {
-      final auth = FirebaseAuth.instance;
-      final user = auth.currentUser ?? (await auth.signInAnonymously()).user;
-      _uid = user?.uid;
-      return _uid != null;
-    } catch (_) {
-      return false;
-    }
+  /// Emits the signed-in [User], or null when signed out.
+  Stream<User?> get authState => _auth.authStateChanges();
+
+  User? get currentUser => _auth.currentUser;
+
+  /// Starts phone-number verification: Firebase sends an SMS OTP to
+  /// [phoneNumber] (E.164 format, e.g. "+919876543210").
+  ///
+  /// On Android, Firebase may auto-retrieve and complete sign-in without
+  /// the user ever typing the code, in which case [onAutoVerified] fires
+  /// directly. Otherwise [onCodeSent] fires with a verification ID the
+  /// caller must pass back into [verifyOtp] along with the code the user
+  /// typed.
+  Future<void> sendOtp({
+    required String phoneNumber,
+    required void Function(String verificationId) onCodeSent,
+    required void Function(String message) onError,
+    required void Function() onAutoVerified,
+  }) {
+    return _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (credential) async {
+        await _auth.signInWithCredential(credential);
+        onAutoVerified();
+      },
+      verificationFailed: (e) => onError(e.message ?? 'Verification failed'),
+      codeSent: (verificationId, _) => onCodeSent(verificationId),
+      codeAutoRetrievalTimeout: (_) {},
+    );
   }
 
+  /// Completes sign-in with the OTP the user typed. Throws a
+  /// [FirebaseAuthException] on an invalid/expired code so the UI can show
+  /// a specific message.
+  Future<void> verifyOtp({
+    required String verificationId,
+    required String smsCode,
+  }) async {
+    final credential = PhoneAuthProvider.credential(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
+    await _auth.signInWithCredential(credential);
+  }
+
+  Future<void> signOut() => _auth.signOut();
+
   CollectionReference<Map<String, dynamic>>? get _collection {
-    final uid = _uid;
+    final uid = currentUser?.uid;
     if (uid == null) return null;
     return FirebaseFirestore.instance
         .collection('users')
@@ -45,7 +82,8 @@ class ReportHistoryService {
         .collection('reports');
   }
 
-  /// Saves [bytes] as a new history entry. Returns silently on failure.
+  /// Saves [bytes] as a new history entry. No-ops silently while signed
+  /// out or on failure.
   Future<void> saveReport({
     required Uint8List bytes,
     required int totalDepth,
@@ -54,7 +92,6 @@ class ReportHistoryService {
     String? clientPhone,
     String? clientAddress,
   }) async {
-    if (!await ensureSignedIn()) return;
     final collection = _collection;
     if (collection == null) return;
 
@@ -76,24 +113,19 @@ class ReportHistoryService {
     }
   }
 
-  /// Streams saved reports, most recent first. Emits an empty list if
-  /// Firebase isn't configured/reachable rather than throwing.
-  Stream<List<ReportRecord>> streamReports() async* {
-    if (!await ensureSignedIn()) {
-      yield const [];
-      return;
-    }
+  /// Streams saved reports, most recent first. Emits an empty list while
+  /// signed out.
+  Stream<List<ReportRecord>> streamReports() {
     final collection = _collection;
-    if (collection == null) {
-      yield const [];
-      return;
-    }
-    yield* collection
+    if (collection == null) return Stream.value(const []);
+    return collection
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ReportRecord.fromJson(doc.id, doc.data()))
-            .toList())
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ReportRecord.fromJson(doc.id, doc.data()))
+              .toList(),
+        )
         .handleError((_) {});
   }
 

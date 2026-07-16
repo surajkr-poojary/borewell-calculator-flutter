@@ -29,7 +29,7 @@ class BillBreakdownItem {
 class BillResult {
   final int totalDepth;
   final double baseRate;
-  final int casingFeet;
+  final int? casingFeet;
   final double? casingRate;
   final List<BillBreakdownItem> drillingItems;
   final List<BillBreakdownItem> otherItems;

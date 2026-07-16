@@ -565,6 +565,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Walk-in customer'**
   String get walkInClient;
+
+  /// No description provided for @signOutTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOutTooltip;
+
+  /// No description provided for @signedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {phone}'**
+  String signedInAs(String phone);
+
+  /// No description provided for @phoneSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to sync bills'**
+  String get phoneSignInTitle;
+
+  /// No description provided for @phoneSignInSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with your phone number to save bills and see the same history on every device.'**
+  String get phoneSignInSubtitle;
+
+  /// No description provided for @phoneNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phoneNumberLabel;
+
+  /// No description provided for @phoneNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'9876543210'**
+  String get phoneNumberHint;
+
+  /// No description provided for @phoneNumberError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid 10-digit phone number.'**
+  String get phoneNumberError;
+
+  /// No description provided for @sendOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Send OTP'**
+  String get sendOtp;
+
+  /// No description provided for @otpLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter OTP'**
+  String get otpLabel;
+
+  /// No description provided for @otpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit code to {phone}'**
+  String otpSubtitle(String phone);
+
+  /// No description provided for @otpError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the 6-digit code.'**
+  String get otpError;
+
+  /// No description provided for @verifyOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verifyOtp;
+
+  /// No description provided for @resendOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend OTP'**
+  String get resendOtp;
+
+  /// No description provided for @changeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Change number'**
+  String get changeNumber;
+
+  /// No description provided for @otpSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the OTP. Please try again.'**
+  String get otpSendFailed;
+
+  /// No description provided for @otpVerifyFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'That code didn\'t work. Please check and try again.'**
+  String get otpVerifyFailed;
 }
 
 class _AppLocalizationsDelegate

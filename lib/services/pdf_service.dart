@@ -131,7 +131,8 @@ class PdfService {
                   color: PdfColors.grey700,
                 ),
               ),
-              if (result.casingFeet > 0 && result.casingRate != null) ...[
+              if ((result.casingFeet ?? 0) > 0 &&
+                  result.casingRate != null) ...[
                 pw.SizedBox(height: 2),
                 pw.Text(
                   '${l10n.casingHeading}: ${result.casingFeet} ft @ ${_money(result.casingRate!)}/ft',

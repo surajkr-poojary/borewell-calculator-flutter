@@ -16,7 +16,6 @@ enum DepthError {
   empty,
   invalid,
   invalidBaseRate,
-  casingEmpty,
   invalidCasing,
   missingCasingRate,
 }
@@ -151,23 +150,20 @@ class BillProvider extends ChangeNotifier {
     }
 
     final trimmedCasing = casingFeetInput.trim();
-    if (trimmedCasing.isEmpty) {
-      depthError = DepthError.casingEmpty;
-      notifyListeners();
-      return;
-    }
+    int? casingFeet;
+    if (trimmedCasing.isNotEmpty) {
+      casingFeet = int.tryParse(trimmedCasing);
+      if (casingFeet == null || casingFeet <= 0) {
+        depthError = DepthError.invalidCasing;
+        notifyListeners();
+        return;
+      }
 
-    final casingFeet = int.tryParse(trimmedCasing);
-    if (casingFeet == null || casingFeet <= 0) {
-      depthError = DepthError.invalidCasing;
-      notifyListeners();
-      return;
-    }
-
-    if (casingRate == null || casingRate! <= 0) {
-      depthError = DepthError.missingCasingRate;
-      notifyListeners();
-      return;
+      if (casingRate == null || casingRate! <= 0) {
+        depthError = DepthError.missingCasingRate;
+        notifyListeners();
+        return;
+      }
     }
 
     if (baseRate <= 0) {
@@ -202,13 +198,14 @@ class BillProvider extends ChangeNotifier {
     }
 
     final otherItems = <BillBreakdownItem>[
-      BillBreakdownItem(
-        label: 'Casing (GI)',
-        quantity: casingFeet,
-        unit: 'ft',
-        rate: casingRate!,
-        amount: casingFeet * casingRate!,
-      ),
+      if (casingFeet != null)
+        BillBreakdownItem(
+          label: 'Casing (GI)',
+          quantity: casingFeet,
+          unit: 'ft',
+          rate: casingRate!,
+          amount: casingFeet * casingRate!,
+        ),
     ];
 
     void addPieceItem(String label, String qtyInput, double rate) {

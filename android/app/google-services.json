@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "585261067843",
+    "project_id": "borewell-calculator",
+    "storage_bucket": "borewell-calculator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585261067843:android:e285386443e96db066eef6",
+        "android_client_info": {
+          "package_name": "com.pharmeasy.borewell.borewell_bill_calculator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAVyp0yCiiNxXtwHAZoi5k4d9lHoncw7Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

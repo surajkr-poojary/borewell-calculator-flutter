@@ -255,4 +255,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get walkInClient => 'Walk-in customer';
+
+  @override
+  String get signOutTooltip => 'Sign out';
+
+  @override
+  String signedInAs(String phone) {
+    return 'Signed in as $phone';
+  }
+
+  @override
+  String get phoneSignInTitle => 'Sign in to sync bills';
+
+  @override
+  String get phoneSignInSubtitle =>
+      'Sign in with your phone number to save bills and see the same history on every device.';
+
+  @override
+  String get phoneNumberLabel => 'Phone number';
+
+  @override
+  String get phoneNumberHint => '9876543210';
+
+  @override
+  String get phoneNumberError => 'Please enter a valid 10-digit phone number.';
+
+  @override
+  String get sendOtp => 'Send OTP';
+
+  @override
+  String get otpLabel => 'Enter OTP';
+
+  @override
+  String otpSubtitle(String phone) {
+    return 'We sent a 6-digit code to $phone';
+  }
+
+  @override
+  String get otpError => 'Please enter the 6-digit code.';
+
+  @override
+  String get verifyOtp => 'Verify';
+
+  @override
+  String get resendOtp => 'Resend OTP';
+
+  @override
+  String get changeNumber => 'Change number';
+
+  @override
+  String get otpSendFailed => 'Could not send the OTP. Please try again.';
+
+  @override
+  String get otpVerifyFailed =>
+      'That code didn\'t work. Please check and try again.';
 }
