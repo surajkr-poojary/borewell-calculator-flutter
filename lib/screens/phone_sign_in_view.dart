@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -62,7 +63,8 @@ class _PhoneSignInViewState extends State<PhoneSignInView> {
         if (!mounted) return;
         setState(() => _isBusy = false);
       },
-      onError: (_) {
+      onError: (message) {
+        debugPrint('Phone auth sendOtp failed: $message');
         if (!mounted) return;
         setState(() {
           _isBusy = false;
@@ -90,7 +92,8 @@ class _PhoneSignInViewState extends State<PhoneSignInView> {
         verificationId: _verificationId!,
         smsCode: code,
       );
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Phone auth verifyOtp failed: $e');
       if (!mounted) return;
       setState(() {
         _isBusy = false;

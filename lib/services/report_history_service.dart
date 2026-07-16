@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/report_record.dart';
 
@@ -51,7 +52,10 @@ class ReportHistoryService {
         await _auth.signInWithCredential(credential);
         onAutoVerified();
       },
-      verificationFailed: (e) => onError(e.message ?? 'Verification failed'),
+      verificationFailed: (e) {
+        debugPrint('Phone auth verificationFailed: ${e.code} - ${e.message}');
+        onError(e.message ?? 'Verification failed');
+      },
       codeSent: (verificationId, _) => onCodeSent(verificationId),
       codeAutoRetrievalTimeout: (_) {},
     );
