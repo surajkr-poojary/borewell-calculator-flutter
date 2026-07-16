@@ -150,17 +150,20 @@ class BillProvider extends ChangeNotifier {
     final trimmedCasing = casingFeetInput.trim();
     int? casingFeet;
     if (trimmedCasing.isNotEmpty) {
-      casingFeet = int.tryParse(trimmedCasing);
-      if (casingFeet == null || casingFeet <= 0) {
+      final parsedCasing = int.tryParse(trimmedCasing);
+      if (parsedCasing == null || parsedCasing < 0) {
         depthError = DepthError.invalidCasing;
         notifyListeners();
         return;
       }
 
-      if (casingRate == null || casingRate! <= 0) {
-        depthError = DepthError.missingCasingRate;
-        notifyListeners();
-        return;
+      if (parsedCasing > 0) {
+        casingFeet = parsedCasing;
+        if (casingRate == null || casingRate! <= 0) {
+          depthError = DepthError.missingCasingRate;
+          notifyListeners();
+          return;
+        }
       }
     }
 
