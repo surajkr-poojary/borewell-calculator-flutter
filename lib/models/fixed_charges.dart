@@ -16,12 +16,8 @@ class FixedCharges {
 
   double get total => collar + welding + cutting + cap;
 
-  factory FixedCharges.defaults() => const FixedCharges(
-        collar: 500,
-        welding: 300,
-        cutting: 300,
-        cap: 300,
-      );
+  factory FixedCharges.defaults() =>
+      const FixedCharges(collar: 500, welding: 300, cutting: 300, cap: 300);
 
   FixedCharges copyWith({
     double? collar,
@@ -38,16 +34,16 @@ class FixedCharges {
   }
 
   Map<String, dynamic> toJson() => {
-        'collar': collar,
-        'welding': welding,
-        'cutting': cutting,
-        'cap': cap,
-      };
+    'collar': collar,
+    'welding': welding,
+    'cutting': cutting,
+    'cap': cap,
+  };
 
   factory FixedCharges.fromJson(Map<String, dynamic> json) => FixedCharges(
-        collar: (json['collar'] as num).toDouble(),
-        welding: (json['welding'] as num).toDouble(),
-        cutting: (json['cutting'] as num).toDouble(),
-        cap: (json['cap'] as num).toDouble(),
-      );
+    collar: (json['collar'] as num).toDouble(),
+    welding: (json['welding'] as num).toDouble(),
+    cutting: (json['cutting'] as num).toDouble(),
+    cap: (json['cap'] as num).toDouble(),
+  );
 }

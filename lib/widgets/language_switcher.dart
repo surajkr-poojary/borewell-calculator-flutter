@@ -14,15 +14,16 @@ class LanguageSwitcher extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final localeProvider = context.watch<LocaleProvider>();
-    final currentCode = localeProvider.locale?.languageCode ??
+    final currentCode =
+        localeProvider.locale?.languageCode ??
         Localizations.localeOf(context).languageCode;
     final isKannada = currentCode == 'kn';
 
     return IconButton(
       tooltip: l10n.languageTooltip,
       onPressed: () => context.read<LocaleProvider>().setLocale(
-            Locale(isKannada ? 'en' : 'kn'),
-          ),
+        Locale(isKannada ? 'en' : 'kn'),
+      ),
       icon: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

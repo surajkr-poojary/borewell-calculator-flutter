@@ -35,13 +35,17 @@ class ResultCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.receipt_long_outlined,
-                    color: theme.colorScheme.primary),
+                Icon(
+                  Icons.receipt_long_outlined,
+                  color: theme.colorScheme.primary,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(breakdownLabel,
-                      style: theme.textTheme.titleLarge,
-                      overflow: TextOverflow.ellipsis),
+                  child: Text(
+                    breakdownLabel,
+                    style: theme.textTheme.titleLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -61,15 +65,17 @@ class ResultCard extends StatelessWidget {
                               ? '${item.quantity}${item.unit != null ? ' ${item.unit}' : ''} × ${CurrencyFormatter.format(item.rate!)}'
                               : l10n.fixedChargeDetail,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant),
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Text(
                     CurrencyFormatter.format(item.amount),
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
@@ -185,7 +191,13 @@ class _RisingWavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     _drawWave(canvas, size, phase, _waveBack, size.height * 0.05);
-    _drawWave(canvas, size, phase + math.pi / 2, _waveFront, size.height * 0.07);
+    _drawWave(
+      canvas,
+      size,
+      phase + math.pi / 2,
+      _waveFront,
+      size.height * 0.07,
+    );
   }
 
   void _drawWave(
@@ -199,7 +211,8 @@ class _RisingWavePainter extends CustomPainter {
     final path = Path()..moveTo(0, baseline);
     const step = 6.0;
     for (double x = 0; x <= size.width; x += step) {
-      final y = baseline +
+      final y =
+          baseline +
           amplitude * math.sin((x / size.width * 2 * math.pi) + wavePhase);
       path.lineTo(x, y);
     }

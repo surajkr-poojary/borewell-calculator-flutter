@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -88,10 +87,7 @@ class _PhoneSignInViewState extends State<PhoneSignInView> {
     });
 
     try {
-      await _service.verifyOtp(
-        verificationId: _verificationId!,
-        smsCode: code,
-      );
+      await _service.verifyOtp(verificationId: _verificationId!, smsCode: code);
     } catch (e) {
       debugPrint('Phone auth verifyOtp failed: $e');
       if (!mounted) return;

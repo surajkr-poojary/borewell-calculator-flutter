@@ -53,7 +53,9 @@ ThemeData buildAppTheme(Brightness brightness) {
       color: colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.6)),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+        ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(

@@ -66,7 +66,8 @@ class _WaveStripPainter extends CustomPainter {
     final path = Path()..moveTo(0, baseline);
     const step = 6.0;
     for (double x = 0; x <= size.width; x += step) {
-      final y = baseline +
+      final y =
+          baseline +
           amplitude * math.sin((x / size.width * 4 * math.pi) + wavePhase);
       path.lineTo(x, y);
     }

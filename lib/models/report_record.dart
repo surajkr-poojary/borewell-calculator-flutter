@@ -32,14 +32,14 @@ class ReportRecord {
   Uint8List get pdfBytes => base64Decode(pdfBase64);
 
   Map<String, dynamic> toJson() => {
-        'createdAt': Timestamp.fromDate(createdAt),
-        'totalDepth': totalDepth,
-        'totalAmount': totalAmount,
-        'clientName': clientName,
-        'clientPhone': clientPhone,
-        'clientAddress': clientAddress,
-        'pdfBase64': pdfBase64,
-      };
+    'createdAt': Timestamp.fromDate(createdAt),
+    'totalDepth': totalDepth,
+    'totalAmount': totalAmount,
+    'clientName': clientName,
+    'clientPhone': clientPhone,
+    'clientAddress': clientAddress,
+    'pdfBase64': pdfBase64,
+  };
 
   factory ReportRecord.fromJson(String id, Map<String, dynamic> json) {
     return ReportRecord(

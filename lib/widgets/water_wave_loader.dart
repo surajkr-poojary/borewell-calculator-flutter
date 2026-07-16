@@ -82,7 +82,13 @@ class _WaterWavePainter extends CustomPainter {
     canvas.drawRect(Offset.zero & size, Paint()..color = _basin);
     _drawWave(canvas, size, phase, _waveBack, 0.55, size.height * 0.06);
     _drawWave(
-        canvas, size, phase + math.pi / 2, _waveFront, 0.9, size.height * 0.08);
+      canvas,
+      size,
+      phase + math.pi / 2,
+      _waveFront,
+      0.9,
+      size.height * 0.08,
+    );
   }
 
   void _drawWave(
@@ -97,7 +103,8 @@ class _WaterWavePainter extends CustomPainter {
     final path = Path()..moveTo(0, baseline);
     const step = 4.0;
     for (double x = 0; x <= size.width; x += step) {
-      final y = baseline +
+      final y =
+          baseline +
           amplitude * math.sin((x / size.width * 2 * math.pi) + wavePhase);
       path.lineTo(x, y);
     }

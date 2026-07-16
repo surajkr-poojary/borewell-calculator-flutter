@@ -27,26 +27,43 @@ Future<void> _pumpUntilLoaded(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 300));
 }
 
-/// Scrolls [finder] into view (if it sits in a Scrollable) and taps it.
-Future<void> _tap(WidgetTester tester, Finder finder) async {
-  await tester.ensureVisible(finder);
+/// Scrolls [finder] into view. Results render below the fold and a plain
+/// ListView only builds what's within the visible + cache extent, so the
+/// widget may not even exist yet — `scrollUntilVisible` drags the
+/// Scrollable step by step until it does, unlike `ensureVisible` which
+/// requires the element to already be built. `scrollUntilVisible` only
+/// drags in one fixed direction though, so a prior call that scrolled
+/// forward (e.g. down to the Calculate button) would strand a target that
+/// sits earlier in the list (e.g. a field's error text) — resetting to the
+/// top first makes every call search forward from the same starting point.
+///
+/// Each TextField has its own internal Scrollable too (for cursor
+/// visibility), so a plain `find.byType(Scrollable)` is ambiguous once any
+/// TextField is on screen — `.first` picks out the outer list's Scrollable,
+/// which is built (and thus found) before the nested per-field ones.
+Future<void> _scrollIntoView(WidgetTester tester, Finder finder) async {
+  final scrollable = find.byType(Scrollable).first;
+  await tester.drag(scrollable, const Offset(0, 5000));
   await tester.pump();
+  await tester.scrollUntilVisible(finder, 200, scrollable: scrollable);
+  await tester.pump();
+}
+
+/// Scrolls [finder] into view and taps it.
+Future<void> _tap(WidgetTester tester, Finder finder) async {
+  await _scrollIntoView(tester, finder);
   await tester.tap(finder);
 }
 
 /// Scrolls [finder] into view and enters [text] into it.
 Future<void> _enterText(WidgetTester tester, Finder finder, String text) async {
-  await tester.ensureVisible(finder);
-  await tester.pump();
+  await _scrollIntoView(tester, finder);
   await tester.enterText(finder, text);
 }
 
-/// Scrolls [finder] into view (results render below the fold and a plain
-/// ListView only builds what's within the visible + cache extent) and
-/// asserts exactly one match.
+/// Scrolls [finder] into view and asserts exactly one match.
 Future<void> _expectVisible(WidgetTester tester, Finder finder) async {
-  await tester.ensureVisible(finder);
-  await tester.pump();
+  await _scrollIntoView(tester, finder);
   expect(finder, findsOneWidget);
 }
 
@@ -92,11 +109,8 @@ void main() {
     expect(find.text('Drilling Rate'), findsOneWidget);
     expect(find.text('Casing'), findsOneWidget);
 
-    // Below the fold until scrolled — ListView only builds what's within
-    // the visible + cache extent.
     final calculateButton = find.text('Calculate Bill');
-    await tester.ensureVisible(calculateButton);
-    await tester.pump();
+    await _scrollIntoView(tester, calculateButton);
     expect(calculateButton, findsOneWidget);
   });
 

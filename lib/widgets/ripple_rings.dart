@@ -34,7 +34,10 @@ class _RippleRingsState extends State<RippleRings>
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, _) => CustomPaint(
-            painter: _RingsPainter(progress: _controller.value, color: widget.color),
+            painter: _RingsPainter(
+              progress: _controller.value,
+              color: widget.color,
+            ),
           ),
         ),
       ),
