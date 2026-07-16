@@ -3,12 +3,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../l10n/generated/app_localizations.dart';
 import '../models/bill_result.dart';
 import '../models/default_rates.dart';
 import '../models/drilling_rate_band.dart';
 import '../models/fixed_charges.dart';
-import '../utils/currency_formatter.dart';
 
 /// Reasons [BillProvider.calculate] can fail. The UI maps each to a
 /// localized message, since this provider has no [BuildContext] of its own.
@@ -254,33 +252,5 @@ class BillProvider extends ChangeNotifier {
     fixedCharges = _savedFixedCharges;
     version++;
     notifyListeners();
-  }
-
-  /// Builds a plain-text bill summary suitable for copying or sharing.
-  String? buildSummaryText(AppLocalizations l10n) {
-    final r = result;
-    if (r == null) return null;
-
-    final buffer = StringBuffer()
-      ..writeln(l10n.appTitle)
-      ..writeln(l10n.pdfTotalDepth(r.totalDepth))
-      ..writeln();
-
-    for (final item in [...r.drillingItems, ...r.otherItems]) {
-      final unitSuffix = item.unit != null ? ' ${item.unit}' : '';
-      final detail = item.quantity != null && item.rate != null
-          ? '${item.quantity}$unitSuffix × ${CurrencyFormatter.format(item.rate!)}'
-          : CurrencyFormatter.format(item.amount);
-      buffer
-        ..writeln(item.label)
-        ..writeln('$detail = ${CurrencyFormatter.format(item.amount)}')
-        ..writeln('-------------------');
-    }
-
-    buffer.writeln();
-    buffer.write(
-      '${l10n.totalAmount}: ${CurrencyFormatter.format(r.totalAmount)}',
-    );
-    return buffer.toString();
   }
 }

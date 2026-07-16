@@ -166,16 +166,6 @@ class _HomeScreenState extends State<HomeScreen> {
     provider.reset();
   }
 
-  Future<void> _onCopy(BillProvider provider, AppLocalizations l10n) async {
-    final text = provider.buildSummaryText(l10n);
-    if (text == null) return;
-    await Clipboard.setData(ClipboardData(text: text));
-    if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.billCopied)));
-  }
-
   /// Validates the client name (required only when billing another client)
   /// and returns the PDF bytes for the current result, or null if invalid.
   Future<Uint8List?> _buildPdfIfValid(
@@ -208,9 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
         totalDepth: result.totalDepth,
         totalAmount: result.totalAmount,
         clientName: _billForClient ? _clientNameController.text.trim() : null,
-        clientPhone: _billForClient
-            ? _clientPhoneController.text.trim()
-            : null,
+        clientPhone: _billForClient ? _clientPhoneController.text.trim() : null,
         clientAddress: _billForClient
             ? _clientAddressController.text.trim()
             : null,
@@ -653,12 +641,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: LargeButton(
-                          label: l10n.copy,
-                          icon: Icons.copy_outlined,
+                          label: l10n.downloadPdf,
+                          icon: Icons.download_outlined,
                           isPrimary: false,
+                          isLoading: _isDownloading,
                           onPressed: _isExporting
                               ? null
-                              : () => _onCopy(provider, l10n),
+                              : () => _onDownloadPdf(provider, l10n),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -675,15 +664,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 12),
-                  LargeButton(
-                    label: l10n.downloadPdf,
-                    icon: Icons.download_outlined,
-                    isLoading: _isDownloading,
-                    onPressed: _isExporting
-                        ? null
-                        : () => _onDownloadPdf(provider, l10n),
                   ),
                 ],
               ],
